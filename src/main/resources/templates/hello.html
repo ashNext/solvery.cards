@@ -9,5 +9,33 @@
 <form th:action="@{/logout}" method="post">
   <input type="submit" value="Sign Out"/>
 </form>
+
+<form th:action="@{/hello}" method="post">
+  <div><label> Number : <input type="text" name="numb"/> </label></div>
+  <div><label> Balance : <input type="text" name="balance"/> </label></div>
+  <input type="submit" value="Add card"/>
+</form>
+
+<div>
+  <table>
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Number</th>
+      <th>Balance</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="card : ${cards}">
+      <td th:text="${card.id}"></td>
+      <td th:text="${card.numb}"></td>
+      <td th:text="${card.balance}"></td>
+      <td><a th:href="@{'/hello/delete/{id}'(id=${card.id})}">delete</a></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
 </body>
 </html>
