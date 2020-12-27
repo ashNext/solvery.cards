@@ -3,6 +3,7 @@ package solvery.cards.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import solvery.cards.model.Card;
+import solvery.cards.model.User;
 import solvery.cards.repository.CardRepository;
 
 @Service
@@ -13,8 +14,8 @@ public class CardService {
     this.repository = repository;
   }
 
-  public List<Card> getAll(){
-    return repository.findAll();
+  public List<Card> getAllByUser(User user){
+    return repository.getAllByUser(user);
   }
 
   public Card create(Card card){

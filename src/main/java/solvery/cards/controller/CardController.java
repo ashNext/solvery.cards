@@ -1,11 +1,13 @@
 package solvery.cards.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import solvery.cards.model.Card;
+import solvery.cards.model.User;
 import solvery.cards.service.CardService;
 
 @Controller
@@ -18,13 +20,14 @@ public class CardController {
   }
 
   @GetMapping("/hello")
-  public String getAll(Model model){
-    model.addAttribute("cards", service.getAll());
+  public String getAll(@AuthenticationPrincipal User user, Model model){
+    model.addAttribute("cards", service.getAllByUser(user));
     return "/hello";
   }
 
   @PostMapping("/hello")
-  public String create(Card card){
+  public String create(@AuthenticationPrincipal User user, Card card){
+    card.setUser(user);
     card.setBalance(0);
     service.create(card);
     return "redirect:/hello";
