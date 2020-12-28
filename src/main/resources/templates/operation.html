@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <title>Operation</title>
+</head>
+<body>
+
+<form th:action="@{/operation/{cn}(cn=${cardNumb})}" method="post">
+  <div><label> Sum : <input type="text" name="sum"/> </label></div>
+  <input type="submit" value="Add sum"/>
+</form>
+
+<a th:href="@{/operation/{cn}/refresh(cn=${cardNumb})}">Refresh balance</a>
+
+<form th:action="@{/operation/{cn}/transfer(cn=${cardNumb})}" method="post">
+  <div><label> Recipient Card number : <input type="text" name="recipientCardNumber"/> </label></div>
+  <div><label> Sum : <input type="text" name="sum"/> </label></div>
+  <input type="submit" value="Transfer money"/>
+</form>
+
+<a th:href="@{/hello}">Back to card</a>
+
+</body>
+</html>
