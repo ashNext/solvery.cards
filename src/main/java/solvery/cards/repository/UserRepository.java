@@ -5,5 +5,5 @@ import solvery.cards.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-  User findByLogin(String login);
+  User findByUsername(String login);
 }

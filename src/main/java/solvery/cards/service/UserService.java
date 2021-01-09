@@ -20,8 +20,8 @@ public class UserService implements UserDetailsService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public User getByLogin(String login) {
-    return repository.findByLogin(login);
+  public User getByUsername(String username) {
+    return repository.findByUsername(username);
   }
 
   public User create(User user) {
@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-    return repository.findByLogin(s);
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    return repository.findByUsername(username);
   }
 }
