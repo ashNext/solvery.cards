@@ -3,9 +3,7 @@ package solvery.cards.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
@@ -33,7 +31,7 @@ public class CardController {
     return "redirect:/hello";
   }
 
-  @GetMapping("/hello/delete/{id}")
+  @DeleteMapping("/hello/delete/{id}")
   public String delete(@PathVariable Integer id){
     service.delete(id);
     return "redirect:/hello";

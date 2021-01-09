@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import solvery.cards.service.OperationService;
 
+import java.time.LocalDateTime;
+
 @Controller
 public class OperationController {
 
@@ -36,8 +38,27 @@ public class OperationController {
   }
 
   @PostMapping("/operation/{cardNumb}/transfer")
-  public String transferMoney(@PathVariable String cardNumb, @RequestParam String recipientCardNumber, @RequestParam String sum) {
+  public String transferMoney(
+          @PathVariable String cardNumb,
+          @RequestParam String recipientCardNumber,
+          @RequestParam String sum) {
     service.transferMoney(cardNumb, recipientCardNumber, Integer.valueOf(sum));
     return "redirect:/operation/" + cardNumb;
+  }
+
+  @GetMapping("/operation/{cardNumb}/history")
+  public String getHistory(
+          @PathVariable String cardNumb,
+          @RequestParam String recipientCardNumber,
+          @RequestParam String startDate,
+          @RequestParam String endDate,
+          Model model) {
+    model.addAttribute(
+            "operations",
+            service.getByFilter(
+                    cardNumb,
+                    startDate.isBlank() ? LocalDateTime.of(1, 1, 1, 0, 0) : LocalDateTime.parse(startDate),
+                    endDate.isBlank() ? LocalDateTime.of(3000, 1, 1, 0, 0) : LocalDateTime.parse(endDate)));
+    return "/operation";
   }
 }

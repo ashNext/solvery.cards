@@ -6,6 +6,7 @@ import solvery.cards.model.Operation;
 import solvery.cards.repository.OperationRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class OperationService {
@@ -41,9 +42,13 @@ public class OperationService {
     cardService.refreshBalanceByCardNumb(cardNumber, getLastBalance(cardNumber));
   }
 
-  @Transactional(rollbackFor = Exception.class)
+  @Transactional
   public void transferMoney(String senderCardNumb, String recipientCardNumb, Integer sum) {
     create(new Operation(senderCardNumb, -sum, LocalDateTime.now()));
     create(new Operation(recipientCardNumb, sum, LocalDateTime.now()));
+  }
+
+  public List<Operation> getByFilter(String cardNumb, LocalDateTime startDate, LocalDateTime endDate) {
+    return repository.getByFilter(cardNumb, startDate, endDate);
   }
 }

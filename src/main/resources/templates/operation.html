@@ -19,6 +19,34 @@
   <input type="submit" value="Transfer money"/>
 </form>
 
+<form th:action="@{/operation/{cn}/history(cn=${cardNumb})}" method="get">
+  <div><label> Recipient Card number : <input type="text" name="recipientCardNumber"/> </label></div>
+  <div><label> Start date : <input type="datetime-local" name="startDate"/> </label></div>
+  <div><label> endDate : <input type="datetime-local" name="endDate"/> </label></div>
+  <input type="submit" value="Filter"/>
+</form>
+
+<div th:if="${not #lists.isEmpty(operations)}">
+  <table>
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Date</th>
+      <th>Recipient Card Number</th>
+      <th>Sum</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="operation : ${operations}">
+      <td th:text="${operation.id}"></td>
+      <td th:text="${operation.dateTime}"></td>
+      <td th:text="${operation.cardNumb}"></td>
+      <td th:text="${operation.sum}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
 <a th:href="@{/hello}">Back to card</a>
 
 </body>
