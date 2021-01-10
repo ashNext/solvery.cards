@@ -3,7 +3,9 @@ package solvery.cards.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
@@ -18,22 +20,23 @@ public class CardController {
   }
 
   @GetMapping("/hello")
-  public String getAll(@AuthenticationPrincipal User user, Model model){
-    model.addAttribute("cards", service.getAllByUser(user));
+  public String getAllEnabled(@AuthenticationPrincipal User user, Model model) {
+    model.addAttribute("cards", service.getAllEnabledByUser(user));
     return "/hello";
   }
 
   @PostMapping("/hello")
-  public String create(@AuthenticationPrincipal User user, Card card){
+  public String create(@AuthenticationPrincipal User user, Card card) {
     card.setUser(user);
-    card.setBalance(0);
     service.create(card);
     return "redirect:/hello";
   }
 
-  @DeleteMapping("/hello/delete/{id}")
-  public String delete(@PathVariable Integer id){
-    service.delete(id);
+  @PostMapping("/hello/delete/{id}")
+  public String close(@PathVariable Integer id) {
+    Card card = service.getById(id);
+    card.setEnabled(false);
+    service.update(card);
     return "redirect:/hello";
   }
 }

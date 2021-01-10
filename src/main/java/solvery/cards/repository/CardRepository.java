@@ -1,14 +1,17 @@
 package solvery.cards.repository;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface CardRepository extends JpaRepository<Card, Integer> {
 
-  List<Card> getAllByUser(User user);
+  @Query("SELECT c FROM Card c WHERE c.user=:user AND c.enabled=:enabled")
+  List<Card> getAllByUser(User user, boolean enabled);
 
   Optional<Card> findByNumb(String numb);
 }

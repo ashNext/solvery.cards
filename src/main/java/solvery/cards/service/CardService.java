@@ -16,20 +16,22 @@ public class CardService {
     this.repository = repository;
   }
 
-  public List<Card> getAllByUser(User user) {
-    return repository.getAllByUser(user);
+  public List<Card> getAllEnabledByUser(User user) {
+    return repository.getAllByUser(user, true);
   }
 
   public Card create(Card card) {
+    card.setBalance(0);
+    card.setEnabled(true);
     return repository.save(card);
-  }
-
-  public void delete(Integer id) {
-    repository.deleteById(id);
   }
 
   public void update(Card card) {
     repository.save(card);
+  }
+
+  public Card getById(Integer id) {
+    return repository.findById(id).orElse(null);
   }
 
   public Card getByCardNumb(String cardNumb) {
