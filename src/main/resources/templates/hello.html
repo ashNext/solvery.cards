@@ -30,7 +30,7 @@
       <td th:text="${card.id}"></td>
       <td th:text="${card.numb}"></td>
       <td th:text="${card.balance}"></td>
-      <td><a th:href="@{'/operation/{numb}'(numb=${card.numb})}">operations</a></td>
+      <td><a th:href="@{'/operation/{id}'(id=${card.id})}">operations</a></td>
       <td>
         <form th:action="@{'/hello/delete/{id}'(id=${card.id})}" method="post">
           <input type="submit" value="Close"/>

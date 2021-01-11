@@ -1,11 +1,7 @@
 package solvery.cards.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "Operations")
@@ -15,7 +11,11 @@ public class Operation {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
-  private String cardNumb;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "card_id")
+  private Card card;
+
+  private String recipientCardNumb;
 
   private Integer sum;
 
@@ -24,28 +24,32 @@ public class Operation {
   private LocalDateTime dateTime;
 
   public static Operation empty() {
-    return new Operation("", 0, 0, LocalDateTime.MIN);
+    return new Operation(null, "", 0, 0, LocalDateTime.MIN);
   }
 
   public Operation() {
   }
 
-  public Operation(Long id, String cardNumb, Integer sum, Integer cardBalance,
-      LocalDateTime dateTime) {
+
+  public Operation(Long id, Card card, String recipientCardNumb, Integer sum, Integer cardBalance, LocalDateTime dateTime) {
     this.id = id;
-    this.cardNumb = cardNumb;
+    this.card = card;
+    this.recipientCardNumb = recipientCardNumb;
     this.sum = sum;
     this.cardBalance = cardBalance;
     this.dateTime = dateTime;
   }
 
-  public Operation(String cardNumb, Integer sum, Integer cardBalance,
-      LocalDateTime dateTime) {
-    this(null, cardNumb, sum, cardBalance, dateTime);
+  public Operation(Card card, String recipientCardNumb, Integer sum, Integer cardBalance, LocalDateTime dateTime) {
+    this(null, card, recipientCardNumb, sum, cardBalance, dateTime);
   }
 
-  public Operation(String cardNumb, Integer sum, LocalDateTime dateTime) {
-    this(null, cardNumb, sum, null, dateTime);
+  public Operation(Card card, String recipientCardNumb, Integer sum, LocalDateTime dateTime) {
+    this(null, card, recipientCardNumb, sum, null, dateTime);
+  }
+
+  public Operation(Card card, Integer sum, LocalDateTime dateTime) {
+    this(null, card, null, sum, null, dateTime);
   }
 
   public Long getId() {
@@ -56,12 +60,20 @@ public class Operation {
     this.id = id;
   }
 
-  public String getCardNumb() {
-    return cardNumb;
+  public Card getCard() {
+    return card;
   }
 
-  public void setCardNumb(String cardNumb) {
-    this.cardNumb = cardNumb;
+  public void setCard(Card card) {
+    this.card = card;
+  }
+
+  public String getRecipientCardNumb() {
+    return recipientCardNumb;
+  }
+
+  public void setRecipientCardNumb(String recipientCardNumb) {
+    this.recipientCardNumb = recipientCardNumb;
   }
 
   public Integer getSum() {

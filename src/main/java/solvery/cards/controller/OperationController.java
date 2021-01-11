@@ -19,36 +19,30 @@ public class OperationController {
     this.service = service;
   }
 
-  @GetMapping("/operation/{cardNumb}")
-  public String get(@PathVariable String cardNumb, Model model) {
-    model.addAttribute("cardNumb", cardNumb);
+  @GetMapping("/operation/{cardId}")
+  public String get(@PathVariable Integer cardId, Model model) {
+    model.addAttribute("cardId", cardId);
     return "/operation";
   }
 
-  @PostMapping("/operation/{cardNumb}")
-  public String addMoney(@PathVariable String cardNumb, @RequestParam String sum) {
-    service.addMoney(cardNumb, Integer.valueOf(sum));
-    return "redirect:/operation/" + cardNumb;
+  @PostMapping("/operation/{cardId}")
+  public String addMoney(@PathVariable Integer cardId, @RequestParam String sum) {
+    service.addMoney(cardId, Integer.valueOf(sum));
+    return "redirect:/operation/" + cardId;
   }
 
-  @GetMapping("/operation/{cardNumb}/refresh")
-  public String refreshBalance(@PathVariable String cardNumb) {
-    service.refreshBalance(cardNumb);
-    return "redirect:/operation/" + cardNumb;
-  }
-
-  @PostMapping("/operation/{cardNumb}/transfer")
+  @PostMapping("/operation/{cardId}/transfer")
   public String transferMoney(
-          @PathVariable String cardNumb,
+          @PathVariable Integer cardId,
           @RequestParam String recipientCardNumber,
           @RequestParam String sum) {
-    service.transferMoney(cardNumb, recipientCardNumber, Integer.valueOf(sum));
-    return "redirect:/operation/" + cardNumb;
+    service.transferMoney(cardId, recipientCardNumber, Integer.valueOf(sum));
+    return "redirect:/operation/" + cardId;
   }
 
-  @GetMapping("/operation/{cardNumb}/history")
+  @GetMapping("/operation/{cardId}/history")
   public String getHistory(
-          @PathVariable String cardNumb,
+          @PathVariable Integer cardId,
           @RequestParam String recipientCardNumber,
           @RequestParam String startDate,
           @RequestParam String endDate,
@@ -56,7 +50,8 @@ public class OperationController {
     model.addAttribute(
             "operations",
             service.getByFilter(
-                    cardNumb,
+                    cardId,
+                    recipientCardNumber.isBlank() ? null : recipientCardNumber,
                     startDate.isBlank() ? LocalDateTime.of(1, 1, 1, 0, 0) : LocalDateTime.parse(startDate),
                     endDate.isBlank() ? LocalDateTime.of(3000, 1, 1, 0, 0) : LocalDateTime.parse(endDate)));
     return "/operation";

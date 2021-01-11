@@ -37,10 +37,4 @@ public class CardService {
   public Card getByCardNumb(String cardNumb) {
     return repository.findByNumb(cardNumb).orElse(null);
   }
-
-  public void refreshBalanceByCardNumb(String cardNumb, Integer balance) {
-    Card card = getByCardNumb(cardNumb);
-    card.setBalance(balance);
-    update(card);
-  }
 }

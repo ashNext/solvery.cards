@@ -6,23 +6,21 @@
 </head>
 <body>
 
-<form th:action="@{/operation/{cn}(cn=${cardNumb})}" method="post">
+<form th:action="@{/operation/{cn}(cn=${cardId})}" method="post">
   <div><label> Sum : <input type="text" name="sum"/> </label></div>
   <input type="submit" value="Add sum"/>
 </form>
 
-<a th:href="@{/operation/{cn}/refresh(cn=${cardNumb})}">Refresh balance</a>
-
-<form th:action="@{/operation/{cn}/transfer(cn=${cardNumb})}" method="post">
+<form th:action="@{/operation/{cn}/transfer(cn=${cardId})}" method="post">
   <div><label> Recipient Card number : <input type="text" name="recipientCardNumber"/> </label></div>
   <div><label> Sum : <input type="text" name="sum"/> </label></div>
   <input type="submit" value="Transfer money"/>
 </form>
 
-<form th:action="@{/operation/{cn}/history(cn=${cardNumb})}" method="get">
-  <div><label> Recipient Card number : <input type="text" name="recipientCardNumber"/> </label></div>
+<form th:action="@{/operation/{cn}/history(cn=${cardId})}" method="get">
+  <div><label> Recipient card number : <input type="text" name="recipientCardNumber"/> </label></div>
   <div><label> Start date : <input type="datetime-local" name="startDate"/> </label></div>
-  <div><label> endDate : <input type="datetime-local" name="endDate"/> </label></div>
+  <div><label> End date : <input type="datetime-local" name="endDate"/> </label></div>
   <input type="submit" value="Filter"/>
 </form>
 
@@ -40,7 +38,7 @@
     <tr th:each="operation : ${operations}">
       <td th:text="${operation.id}"></td>
       <td th:text="${operation.dateTime}"></td>
-      <td th:text="${operation.cardNumb}"></td>
+      <td th:text="${operation.recipientCardNumb}"></td>
       <td th:text="${operation.sum}"></td>
     </tr>
     </tbody>
