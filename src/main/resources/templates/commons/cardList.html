@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<body>
+<div th:fragment="cardList">
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Number</th>
+            <th>Balance</th>
+            <th colspan="2">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="card : ${cards}">
+            <td th:text="${card.id}"></td>
+            <td th:text="${card.numb}"></td>
+            <td th:text="${card.balance}"></td>
+            <td><a th:href="@{'/operation/{id}'(id=${card.id})}">operations</a></td>
+            <td>
+                <form th:action="@{'/card/delete/{id}'(id=${card.id})}" method="post">
+                    <input type="submit" value="Close"/>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-  <title>Spring Security Example </title>
+    <title>Spring Security Example </title>
 </head>
 <body>
 <div th:if="${param.error}">
-  Invalid username.
+    Invalid username.
 </div>
 <form th:action="@{/registration}" method="post">
-  <div><label> Username : <input type="text" name="username"/> </label></div>
-  <div><label> Full name : <input type="text" name="fullName"/> </label></div>
-  <div><label> E-mail : <input type="email" name="email"/> </label></div>
-  <div><label> Password: <input type="password" name="password"/> </label></div>
-  <div><label> Retype password: <input type="password" name="password2"/> </label></div>
-  <div><input type="submit" value="Sign up"/></div>
+    <div><label> Username : <input type="text" name="username"/> </label></div>
+    <div><label> Full name : <input type="text" name="fullName"/> </label></div>
+    <div><label> E-mail : <input type="email" name="email"/> </label></div>
+    <div><label> Password: <input type="password" name="password"/> </label></div>
+    <div><label> Retype password: <input type="password" name="password2"/> </label></div>
+    <div><input type="submit" value="Sign up"/></div>
 </form>
 <a th:href="@{/login}">Login</a>
 </body>

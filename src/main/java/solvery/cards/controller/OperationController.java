@@ -2,15 +2,13 @@ package solvery.cards.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import solvery.cards.service.OperationService;
 
 import java.time.LocalDateTime;
 
 @Controller
+@RequestMapping("/operation")
 public class OperationController {
 
   private final OperationService service;
@@ -19,19 +17,19 @@ public class OperationController {
     this.service = service;
   }
 
-  @GetMapping("/operation/{cardId}")
+  @GetMapping("/{cardId}")
   public String get(@PathVariable Integer cardId, Model model) {
     model.addAttribute("cardId", cardId);
     return "/operation";
   }
 
-  @PostMapping("/operation/{cardId}")
+  @PostMapping("/{cardId}")
   public String addMoney(@PathVariable Integer cardId, @RequestParam String sum) {
     service.addMoney(cardId, Integer.valueOf(sum));
     return "redirect:/operation/" + cardId;
   }
 
-  @PostMapping("/operation/{cardId}/transfer")
+  @PostMapping("/{cardId}/transfer")
   public String transferMoney(
           @PathVariable Integer cardId,
           @RequestParam String recipientCardNumber,
@@ -40,7 +38,7 @@ public class OperationController {
     return "redirect:/operation/" + cardId;
   }
 
-  @GetMapping("/operation/{cardId}/history")
+  @GetMapping("/{cardId}/history")
   public String getHistory(
           @PathVariable Integer cardId,
           @RequestParam String recipientCardNumber,
