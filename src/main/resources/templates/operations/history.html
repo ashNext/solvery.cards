@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <title>Operation - History</title>
+</head>
+<body>
+<div th:insert="commons/header :: navigation"></div>
+<div th:insert="commons/header :: navigation-operations"></div>
+
+<div th:if="${#lists.isEmpty(cards)}">
+  No cards available!
+</div>
+
+<div th:if="${not #lists.isEmpty(cards)}">
+  <div>
+    <label>Current card:
+      <select form="form-history" name="card">
+        <option th:each="c : ${cards}" th:text="${c.numb}" th:value="${c.id}" th:selected="${c.id}==${cardSelected}"></option>
+      </select>
+    </label>
+  </div>
+
+  <div>
+    <form id="form-history" th:action="@{/operation/history}" method="get">
+      <div><label>Recipient card number: <input type="text" name="recipientCardNumber" th:value="${param.recipientCardNumber}"/></label></div>
+      <div><label>Start date: <input type="datetime-local" name="startDate" th:value="${startDate}"/> </label></div>
+      <div><label>End date: <input type="datetime-local" name="endDate" th:value="${endDate}"/> </label></div>
+      <input type="submit" value="Filter"/>
+    </form>
+  </div>
+
+  <div th:if="${#lists.isEmpty(operations)}">
+    No transactions!
+  </div>
+
+  <div th:if="${not #lists.isEmpty(operations)}">
+    <table>
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Recipient Card Number</th>
+        <th>Sum</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="operation : ${operations}">
+        <td th:text="${operation.id}"></td>
+        <td th:text="${operation.dateTime}"></td>
+        <td th:text="${operation.recipientCardNumb}"></td>
+        <td th:text="${operation.sum}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
