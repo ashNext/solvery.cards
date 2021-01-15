@@ -14,7 +14,7 @@
     </form>
   </div>
 
-  <div  th:if="${not #lists.isEmpty(cards)}" th:insert="commons/cardList :: cardList"></div>
+  <div th:if="${not #lists.isEmpty(cards)}" th:insert="commons/lists :: cardList"></div>
 </div>
 
 </body>

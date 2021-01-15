@@ -17,10 +17,31 @@
       <td th:text="${card.numb}"></td>
       <td th:text="${card.balance}"></td>
       <td>
-        <form th:action="@{'/card/delete/{id}'(id=${card.id})}" method="post">
+        <form th:action="@{'/card/close/{id}'(id=${card.id})}" method="post">
           <input type="submit" value="Close"/>
         </form>
       </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div th:fragment="historyList">
+  <table>
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Date</th>
+      <th>Recipient Card Number</th>
+      <th>Sum</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="operation : ${operations}">
+      <td th:text="${operation.id}"></td>
+      <td th:text="${operation.dateTime}"></td>
+      <td th:text="${operation.recipientCardNumb}"></td>
+      <td th:text="${operation.sum}"></td>
     </tr>
     </tbody>
   </table>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<body>
+<div th:fragment="dropdown-cards (formname)">
+  <label>Current card:
+    <select th:form="${formname}" name="card">
+      <option th:each="c : ${cards}"
+              th:text="${c.numb}"
+              th:value="${c.id}"
+              th:selected="${c.id}==${cardSelected}">
+      </option>
+    </select>
+  </label>
+</div>
+</body>
+</html>

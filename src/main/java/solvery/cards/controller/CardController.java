@@ -34,7 +34,7 @@ public class CardController {
     return "redirect:/card";
   }
 
-  @PostMapping("/delete/{id}")
+  @PostMapping("/close/{id}")
   public String close(@PathVariable Integer id) {
     Card card = service.getById(id);
     card.setEnabled(false);

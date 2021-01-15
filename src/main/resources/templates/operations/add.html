@@ -11,17 +11,10 @@
   No cards available!
 </div>
 
-<div th:if="${not #lists.isEmpty(cards)}">
+<div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-add'">
+  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>
   <div>
-    <label>Current card:
-      <select form="form-add" name="card">
-        <option th:each="c : ${cards}" th:text="${c.numb}" th:value="${c.id}" th:selected="${c.id}==${cardSelected}"></option>
-      </select>
-    </label>
-  </div>
-
-  <div>
-    <form id="form-add" th:action="@{/operation/add}" method="post">
+    <form th:id="${formname}" th:action="@{/operation/add}" method="post">
       <div><label> Sum: <input type="text" name="sum"/></label></div>
       <input type="submit" value="Add sum"/>
     </form>

@@ -11,18 +11,13 @@
   No cards available!
 </div>
 
-<div th:if="${not #lists.isEmpty(cards)}">
+<div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-transfer'">
+  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>
   <div>
-    <label>Current card:
-      <select form="form-transfer" name="card">
-        <option th:each="c : ${cards}" th:text="${c.numb}" th:value="${c.id}" th:selected="${c.id}==${cardSelected}"></option>
-      </select>
-    </label>
-  </div>
-
-  <div>
-    <form id="form-transfer" th:action="@{/operation/transfer}" method="post">
-      <div><label>Recipient card number: <input type="text" name="recipientCardNumber"/></label></div>
+    <form th:id="${formname}" th:action="@{/operation/transfer}" method="post">
+      <div>
+        <label>Recipient card number: <input type="text" name="recipientCardNumber"/></label>
+      </div>
       <div><label>Sum: <input type="text" name="sum"/> </label></div>
       <input type="submit" value="Transfer money"/>
     </form>
