@@ -4,6 +4,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Set;
 
@@ -15,18 +18,35 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
+  @Column(name = "username", nullable = false, unique = true)
+  @NotBlank
+  @Size(min = 2, max = 100)
   private String username;
 
+  @Column(name = "password", nullable = false)
+  @NotBlank
+  @Size(min = 1, max = 100)
   private String password;
 
+  @Column(name = "full_name", nullable = false)
+  @NotBlank
+  @Size(min = 2, max = 100)
   private String fullName;
 
+  @Column(name = "email", nullable = false, unique = true)
+  @Email
+  @NotBlank
+  @Size(max = 100)
   private String email;
 
+  @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
   private boolean enabled;
 
+  @Column(name = "roles")
   @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-  @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+  @CollectionTable(name = "user_role",
+      joinColumns = @JoinColumn(name = "user_id"),
+      uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "roles"}, name = "user_roles_unique_idx")})
   @Enumerated(EnumType.STRING)
   private Set<Role> roles;
 

@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-  <title>Spring Security Example </title>
+  <title>Registration</title>
 </head>
 <body>
-<div th:if="${param.error}">
-  Invalid username.
-</div>
 <form th:action="@{/registration}" method="post" th:object="${user}">
-  <div><label> Username : <input type="text" th:field="*{username}"/> </label></div>
-  <div><label> Full name : <input type="text" th:field="*{fullName}"/> </label></div>
-  <div><label> E-mail : <input type="email" th:field="*{email}"/> </label></div>
-  <div><label> Password: <input type="password" th:field="*{password}"/> </label></div>
+  <div>
+    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red; ">Error username</span><br>
+    <label> Username : <input type="text" th:field="*{username}"/> </label>
+  </div>
+  <div>
+    <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" style="color: red; " th:remove="tag">Error fullName</span><br>
+    <label> Full name : <input type="text" th:field="*{fullName}"/> </label>
+  </div>
+  <div>
+    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red; ">Error email</span><br>
+    <label> E-mail : <input type="email" th:field="*{email}"/> </label>
+  </div>
+  <div>
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red; ">Error email</span><br>
+    <label> Password: <input type="password" th:field="*{password}"/> </label>
+  </div>
   <div><label> Retype password: <input type="password" name="password2"/> </label></div>
   <div><input type="submit" value="Sign up"/></div>
 </form>
