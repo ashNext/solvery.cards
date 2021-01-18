@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.repository.CardRepository;
+import solvery.cards.util.exception.NotFoundException;
 
 import java.util.List;
 
@@ -31,10 +32,13 @@ public class CardService {
   }
 
   public Card getById(Integer id) {
-    return repository.findById(id).orElse(null);
+    return repository.findById(id)
+        .orElseThrow(() -> new NotFoundException("id=" + id));
   }
 
   public Card getByCardNumb(String cardNumb) {
-    return repository.findByNumb(cardNumb).orElse(null);
+    System.out.println("1");
+    return repository.findByNumb(cardNumb)
+        .orElseThrow(() -> new NotFoundException("cardNumb=" + cardNumb));
   }
 }

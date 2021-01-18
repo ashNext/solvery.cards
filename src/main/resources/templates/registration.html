@@ -10,7 +10,7 @@
     <label> Username : <input type="text" th:field="*{username}"/> </label>
   </div>
   <div>
-    <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" style="color: red; " th:remove="tag">Error fullName</span><br>
+    <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" style="color: red; ">Error fullName</span><br>
     <label> Full name : <input type="text" th:field="*{fullName}"/> </label>
   </div>
   <div>

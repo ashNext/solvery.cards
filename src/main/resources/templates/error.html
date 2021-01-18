@@ -8,19 +8,11 @@
 
 <div>
   <div>
-    <h2 th:text="${url}"></h2>
-    <h4 th:text="${status}"></h4>
     <h4 th:text="${message}"></h4>
   </div>
-
   <p>
     <a href="#" onclick="window.history.back()">Back</a>
   </p>
-
-  <div th:if="${not #lists.isEmpty(exception.stackTrace)}"
-       th:each="stackTrace : ${exception.stackTrace}">
-    <span th:text="${stackTrace}"></span>
-  </div>
 </div>
 
 <div th:insert="commons/footer :: copyrights"></div>

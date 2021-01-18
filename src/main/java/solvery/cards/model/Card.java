@@ -1,9 +1,23 @@
 package solvery.cards.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
 
 @Entity
-@Table(name = "cards")
+@Table(name = "cards", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"numb"}, name = "cards_unique_numb_idx")})
 public class Card {
 
   @Id
@@ -12,12 +26,20 @@ public class Card {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
+  @NotNull
   private User user;
 
+  @Column(name = "numb", nullable = false)
+  @NotBlank
+  @Size(min = 2, max = 16)
   private String numb;
 
+  @Column(name = "balance", nullable = false)
+  @NotNull
+  @Range(min = 0, max = 999999999)
   private Integer balance;
 
+  @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
   private boolean enabled;
 
   public Card() {
