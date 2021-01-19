@@ -4,7 +4,9 @@
   <title>Registration</title>
 </head>
 <body>
-<form th:action="@{/registration}" method="post" th:object="${user}">
+<div th:insert="commons/header :: navigation"></div>
+
+<form th:action="@{/registration}" method="post" th:object="${userRegistrationTo}">
   <div>
     <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red; ">Error username</span><br>
     <label> Username : <input type="text" th:field="*{username}"/> </label>
@@ -18,12 +20,17 @@
     <label> E-mail : <input type="email" th:field="*{email}"/> </label>
   </div>
   <div>
-    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red; ">Error email</span><br>
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red; ">Password</span><br>
     <label> Password: <input type="password" th:field="*{password}"/> </label>
   </div>
-  <div><label> Retype password: <input type="password" name="password2"/> </label></div>
+  <div>
+    <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" style="color: red; ">Confirm password</span><br>
+    <label> Retype password: <input type="password" th:field="*{confirmPassword}"/> </label>
+  </div>
   <div><input type="submit" value="Sign up"/></div>
 </form>
 <a th:href="@{/login}">Login</a>
+
+<div th:insert="commons/footer :: copyrights"></div>
 </body>
 </html>

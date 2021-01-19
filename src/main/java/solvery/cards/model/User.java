@@ -11,14 +11,17 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"username"}, name = "users_unique_username_idx"),
+    @UniqueConstraint(columnNames = {"email"}, name = "users_unique_email_idx")
+})
 public class User implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @Column(name = "username", nullable = false, unique = true)
+  @Column(name = "username", nullable = false)
   @NotBlank
   @Size(min = 2, max = 100)
   private String username;
@@ -33,7 +36,7 @@ public class User implements UserDetails {
   @Size(min = 2, max = 100)
   private String fullName;
 
-  @Column(name = "email", nullable = false, unique = true)
+  @Column(name = "email", nullable = false)
   @Email
   @NotBlank
   @Size(max = 100)
@@ -46,7 +49,8 @@ public class User implements UserDetails {
   @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
   @CollectionTable(name = "user_role",
       joinColumns = @JoinColumn(name = "user_id"),
-      uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "roles"}, name = "user_roles_unique_idx")})
+      uniqueConstraints = {
+          @UniqueConstraint(columnNames = {"user_id", "roles"}, name = "user_roles_unique_idx")})
   @Enumerated(EnumType.STRING)
   private Set<Role> roles;
 
