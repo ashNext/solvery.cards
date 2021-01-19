@@ -1,5 +1,6 @@
 package solvery.cards.service;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solvery.cards.model.Card;
@@ -8,6 +9,7 @@ import solvery.cards.repository.OperationRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import solvery.cards.util.DateTimeUtil;
 
 @Service
 public class OperationService {
@@ -40,9 +42,16 @@ public class OperationService {
     create(new Operation(recipientCard, card.getNumb(), sum, LocalDateTime.now()));
   }
 
-  public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, LocalDateTime startDate, LocalDateTime endDate) {
+  public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, LocalDate startDate, LocalDate endDate) {
     return recipientCardNumb == null ?
-            repository.getByFilter(cardService.getById(cardId), startDate, endDate) :
-            repository.getByFilterWithRecipientCardNumb(cardService.getById(cardId), recipientCardNumb, startDate, endDate);
+        repository.getByFilter(
+            cardService.getById(cardId),
+            DateTimeUtil.startOrMinDate(startDate),
+            DateTimeUtil.endOrMaxDate(endDate)) :
+        repository.getByFilterWithRecipientCardNumb(
+            cardService.getById(cardId),
+            recipientCardNumb,
+            DateTimeUtil.startOrMinDate(startDate),
+            DateTimeUtil.endOrMaxDate(endDate));
   }
 }

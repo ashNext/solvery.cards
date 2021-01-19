@@ -1,7 +1,9 @@
 package solvery.cards.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -102,8 +104,8 @@ public class OperationController {
       @AuthenticationPrincipal User user,
       @RequestParam(required = false) Card card,
       @RequestParam(defaultValue = "") String recipientCardNumber,
-      @RequestParam(defaultValue = "") String startDate,
-      @RequestParam(defaultValue = "") String endDate,
+      @RequestParam @Nullable LocalDate startDate,
+      @RequestParam @Nullable LocalDate endDate,
       Model model) {
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     if (card != null) {
@@ -113,10 +115,8 @@ public class OperationController {
           service.getByFilter(
               card.getId(),
               recipientCardNumber.isBlank() ? null : recipientCardNumber,
-              startDate.isBlank() ? LocalDateTime.of(1, 1, 1, 0, 0)
-                  : LocalDateTime.parse(startDate),
-              endDate.isBlank() ? LocalDateTime.of(3000, 1, 1, 0, 0)
-                  : LocalDateTime.parse(endDate)));
+              startDate,
+              endDate));
     }
     return "/operations/history";
   }
