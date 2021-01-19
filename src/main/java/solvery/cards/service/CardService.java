@@ -33,12 +33,11 @@ public class CardService {
 
   public Card getById(Integer id) {
     return repository.findById(id)
-        .orElseThrow(() -> new NotFoundException("id=" + id));
+        .orElseThrow(() -> new NotFoundException("Card is not found!"));
   }
 
   public Card getByCardNumb(String cardNumb) {
-    System.out.println("1");
     return repository.findByNumb(cardNumb)
-        .orElseThrow(() -> new NotFoundException("cardNumb=" + cardNumb));
+        .orElseThrow(() -> new NotFoundException("Card \"" + cardNumb + "\" is not found!"));
   }
 }

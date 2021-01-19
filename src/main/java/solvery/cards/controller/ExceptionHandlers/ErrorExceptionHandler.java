@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import solvery.cards.util.ValidationUtil;
+import solvery.cards.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -38,6 +39,16 @@ public class ErrorExceptionHandler {
     }
 
     return getModelAndViewError(message, HttpStatus.CONFLICT);
+  }
+
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(value = NotFoundException.class)
+  public ModelAndView conflict(HttpServletRequest req, NotFoundException e) throws Exception {
+    Throwable rootCause = ValidationUtil.getRootCause(e);
+
+    String message = ValidationUtil.getMessage(rootCause);
+
+    return getModelAndViewError(message, HttpStatus.NOT_FOUND);
   }
 
   private ModelAndView getModelAndViewError(String message, HttpStatus httpStatus) {

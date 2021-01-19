@@ -12,13 +12,31 @@
 </div>
 
 <div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-transfer'">
-  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>
+<!--  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>-->
   <div>
-    <form th:id="${formname}" th:action="@{/operation/transfer}" method="post">
+    <form th:id="${formname}" th:action="@{/operation/transfer}" th:object="${operationTransferTo}" method="post">
+
       <div>
-        <label>Recipient card number: <input type="text" name="recipientCardNumber"/></label>
+        <label>Current card:
+          <select th:form="${formname}" name="card" th:value="${cardSelected}" th:field="*{card}">
+            <option th:each="c : ${cards}"
+                    th:text="${c.numb}"
+                    th:value="${c.id}"
+                    th:selected="${c.id}==${cardSelected}">
+            </option>
+          </select>
+        </label>
       </div>
-      <div><label>Sum: <input type="text" name="sum"/> </label></div>
+
+      <div>
+        <span th:if="${#fields.hasErrors('recipientCardNumb')}" th:errors="*{recipientCardNumb}" style="color: red; ">
+          Error recipientCardNumb</span><br>
+        <label>Recipient card number: <input type="text" th:field="*{recipientCardNumb}"/></label>
+      </div>
+      <div>
+        <span th:if="${#fields.hasErrors('sum')}" th:errors="*{sum}" style="color: red; ">Error sum</span><br>
+        <label>Sum: <input type="text" th:field="*{sum}"/> </label>
+      </div>
       <input type="submit" value="Transfer money"/>
     </form>
   </div>
