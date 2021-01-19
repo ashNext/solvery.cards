@@ -1,10 +1,11 @@
 package solvery.cards.controller;
 
+import java.time.LocalDateTime;
+import javax.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +16,6 @@ import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
 import solvery.cards.service.OperationService;
-
-import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/operation")
@@ -85,29 +83,18 @@ public class OperationController {
       @Valid OperationTransferTo operationTransferTo,
       BindingResult bindingResult,
       Model model) {
-    if (operationTransferTo.getCard().getNumb().equalsIgnoreCase(operationTransferTo.getRecipientCardNumb())) {
-      bindingResult.addError(
-          new FieldError(
-              "recipientCardNumb",
-              "recipientCardNumb",
-              operationTransferTo.getRecipientCardNumb(),
-              false,
-              null,
-              null,
-              "Номер карты получателя не может совпадать с номером карты отправителя")
-      );
-    }
-
     if (bindingResult.hasErrors()) {
       model.addAttribute("cards", cardService.getAllEnabledByUser(user));
       return "/operations/transfer";
     }
 
+    int cardId = cardService.getByCardNumb(operationTransferTo.getCardNumb()).getId();
+
     service.transferMoney(
-        operationTransferTo.getCard().getId(),
+        cardId,
         operationTransferTo.getRecipientCardNumb(),
         operationTransferTo.getSum());
-    return "redirect:/operation/transfer?cardId=" + operationTransferTo.getCard().getId();
+    return "redirect:/operation/transfer?cardId=" + cardId;
   }
 
   @GetMapping("/history")

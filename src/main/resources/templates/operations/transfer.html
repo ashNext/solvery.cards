@@ -18,15 +18,27 @@
 
       <div>
         <label>Current card:
-          <select th:form="${formname}" name="card" th:value="${cardSelected}" th:field="*{card}">
+          <select th:form="${formname}" th:field="*{cardNumb}">
             <option th:each="c : ${cards}"
                     th:text="${c.numb}"
-                    th:value="${c.id}"
-                    th:selected="${c.id}==${cardSelected}">
+                    th:value="${c.numb}"
+                    th:selected="${c.numb}==${cardSelected}">
             </option>
           </select>
         </label>
       </div>
+
+<!--      <div>-->
+<!--        <label>Current card:-->
+<!--          <select th:form="${formname}" name="card" th:value="${cardSelected}" th:field="*{card}">-->
+<!--            <option th:each="c : ${cards}"-->
+<!--                    th:text="${c.numb}"-->
+<!--                    th:value="${c.numb}"-->
+<!--                    th:selected="${c.id}==${cardSelected}">-->
+<!--            </option>-->
+<!--          </select>-->
+<!--        </label>-->
+<!--      </div>-->
 
       <div>
         <span th:if="${#fields.hasErrors('recipientCardNumb')}" th:errors="*{recipientCardNumb}" style="color: red; ">

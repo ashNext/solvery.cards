@@ -2,6 +2,7 @@ package solvery.cards.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import solvery.cards.validator.card.UniqueCardNumber;
 
 public class CardTo {
 
@@ -9,6 +10,7 @@ public class CardTo {
 
   @NotBlank
   @Size(min = 2, max = 16)
+  @UniqueCardNumber(message = "Уже зарегистрирована карта с таким номером!")
   private String numb;
 
   private Integer balance;

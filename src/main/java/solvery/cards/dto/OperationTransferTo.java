@@ -1,16 +1,36 @@
 package solvery.cards.dto;
 
-import org.hibernate.validator.constraints.Range;
-import solvery.cards.model.Card;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
+import solvery.cards.validator.FieldsValueMatch;
+import solvery.cards.validator.card.CheckCardAvailability;
 
-public class OperationTransferTo extends OperationAddTo {
+@FieldsValueMatch.List({
+    @FieldsValueMatch(
+        field = "recipientCardNumb",
+        fieldMatch = "cardNumb",
+        mustMatch = false,
+        message = "Номер карты получателя не может совпадать с номером карты отправителя!"
+    )
+})
+public class OperationTransferTo {
+
+  private Integer id;
 
   @NotBlank
   @Size(min = 2, max = 16)
+  @CheckCardAvailability(message = "Карта отправителя не найдена")
+  private String cardNumb;
+
+  @NotNull
+  @Range(min = 1, max = 999999999)
+  private Integer sum;
+
+  @NotBlank
+  @Size(min = 2, max = 16)
+  @CheckCardAvailability(message = "Карта получателя не найдена")
   private String recipientCardNumb;
 
   public OperationTransferTo() {
@@ -18,11 +38,37 @@ public class OperationTransferTo extends OperationAddTo {
 
   public OperationTransferTo(
       Integer id,
-      @NotNull Card card,
+      @NotBlank @Size(min = 2, max = 16) String cardNumb,
       @NotNull @Range(min = 1, max = 999999999) Integer sum,
       @NotBlank @Size(min = 2, max = 16) String recipientCardNumb) {
-    super(id, card, sum);
+    this.id = id;
+    this.cardNumb = cardNumb;
+    this.sum = sum;
     this.recipientCardNumb = recipientCardNumb;
+  }
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public String getCardNumb() {
+    return cardNumb;
+  }
+
+  public void setCardNumb(String cardNumb) {
+    this.cardNumb = cardNumb;
+  }
+
+  public Integer getSum() {
+    return sum;
+  }
+
+  public void setSum(Integer sum) {
+    this.sum = sum;
   }
 
   public String getRecipientCardNumb() {
