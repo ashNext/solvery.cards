@@ -1,8 +1,5 @@
 package solvery.cards.controller;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import javax.validation.Valid;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +15,9 @@ import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
 import solvery.cards.service.OperationService;
+
+import javax.validation.Valid;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/operation")
