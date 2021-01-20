@@ -18,12 +18,8 @@
 
       <div>
         <label>Current card:
-          <select th:form="${formname}" name="card" th:value="${cardSelected}" th:field="*{card}">
-            <option th:each="c : ${cards}"
-                    th:text="${c.numb}"
-                    th:value="${c.id}"
-                    th:selected="${c.id}==${cardSelected}">
-            </option>
+          <select th:form="${formname}" th:field="*{card}">
+            <option th:each="c : ${cards}" th:text="${c.numb}" th:value="${c.id}"></option>
           </select>
         </label>
       </div>

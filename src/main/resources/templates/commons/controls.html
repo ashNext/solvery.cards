@@ -3,7 +3,7 @@
 <body>
 <div th:fragment="dropdown-cards (formname)">
   <label>Current card:
-    <select th:form="${formname}" name="card">
+    <select th:form="${formname}" name="cardId">
       <option th:each="c : ${cards}"
               th:text="${c.numb}"
               th:value="${c.id}"

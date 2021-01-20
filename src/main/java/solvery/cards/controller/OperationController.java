@@ -38,14 +38,7 @@ public class OperationController {
   }
 
   @GetMapping("/add")
-  public String getAddMoney(
-      @AuthenticationPrincipal User user,
-      @RequestParam(required = false) Integer cardId,
-      Model model) {
-    if (cardId != null) {
-      model.addAttribute("cardSelected", cardId);
-    }
-
+  public String getAddMoney(@AuthenticationPrincipal User user, Model model) {
     model.addAttribute("operationAddTo", new OperationAddTo());
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     return "/operations/add";
@@ -62,18 +55,11 @@ public class OperationController {
       return "/operations/add";
     }
     service.addMoney(operationAddTo.getCard().getId(), operationAddTo.getSum());
-    return "redirect:/operation/add?cardId=" + operationAddTo.getCard().getId();
+    return "redirect:/operation/add";
   }
 
   @GetMapping("/transfer")
-  public String getTransfer(
-      @AuthenticationPrincipal User user,
-      @RequestParam(required = false) Card card,
-      Model model) {
-    if (card != null) {
-      model.addAttribute("cardSelected", card.getId());
-    }
-
+  public String getTransfer(@AuthenticationPrincipal User user, Model model) {
     model.addAttribute("operationTransferTo", new OperationTransferTo());
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     return "/operations/transfer";
@@ -90,33 +76,25 @@ public class OperationController {
       return "/operations/transfer";
     }
 
-    int cardId = cardService.getByCardNumb(operationTransferTo.getCardNumb()).getId();
-
     service.transferMoney(
-        cardId,
+        cardService.getByCardNumb(operationTransferTo.getCardNumb()).getId(),
         operationTransferTo.getRecipientCardNumb(),
         operationTransferTo.getSum());
-    return "redirect:/operation/transfer?cardId=" + cardId;
+    return "redirect:/operation/transfer";
   }
 
   @GetMapping("/history")
   public String getHistory(
       @AuthenticationPrincipal User user,
-      @RequestParam(required = false) Card card,
-      @RequestParam(defaultValue = "") String recipientCardNumber,
+      @RequestParam @Nullable Integer cardId,
+      @RequestParam @Nullable String recipientCardNumber,
       @RequestParam @Nullable LocalDate startDate,
       @RequestParam @Nullable LocalDate endDate,
       Model model) {
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
-    if (card != null) {
-      model.addAttribute("cardSelected", card.getId());
-      model.addAttribute(
-          "operations",
-          service.getByFilter(
-              card.getId(),
-              recipientCardNumber.isBlank() ? null : recipientCardNumber,
-              startDate,
-              endDate));
+    if (cardId != null) {
+      model.addAttribute("cardSelected", cardId);
+      model.addAttribute("operations", service.getByFilter(cardId, recipientCardNumber, startDate, endDate));
     }
     return "/operations/history";
   }

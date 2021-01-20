@@ -43,15 +43,11 @@ public class OperationService {
   }
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, LocalDate startDate, LocalDate endDate) {
-    return recipientCardNumb == null ?
-        repository.getByFilter(
-            cardService.getById(cardId),
-            DateTimeUtil.startOrMinDate(startDate),
-            DateTimeUtil.endOrMaxDate(endDate)) :
-        repository.getByFilterWithRecipientCardNumb(
-            cardService.getById(cardId),
-            recipientCardNumb,
-            DateTimeUtil.startOrMinDate(startDate),
-            DateTimeUtil.endOrMaxDate(endDate));
+    Card card = cardService.getById(cardId);
+    LocalDateTime start = DateTimeUtil.startOrMinDate(startDate);
+    LocalDateTime end = DateTimeUtil.endOrMaxDate(endDate);
+    return recipientCardNumb == null || recipientCardNumb.isBlank() ?
+        repository.getByFilter(card, start, end) :
+        repository.getByFilterWithRecipientCardNumb(card, recipientCardNumb, start, end);
   }
 }
