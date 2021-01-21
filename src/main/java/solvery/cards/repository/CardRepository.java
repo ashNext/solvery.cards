@@ -14,4 +14,8 @@ public interface CardRepository extends JpaRepository<Card, Integer> {
   List<Card> getAllByUser(User user, boolean enabled);
 
   Optional<Card> findByNumb(String numb);
+
+  Optional<Card> findByNumbAndEnabledTrue(String numb);
+
+  Optional<Card> findByIdAndEnabledTrue(Integer id);
 }

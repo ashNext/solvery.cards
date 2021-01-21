@@ -31,19 +31,19 @@ public class OperationService {
   }
 
   public void addMoney(Integer cardId, Integer sum) {
-    create(new Operation(cardService.getById(cardId), sum, LocalDateTime.now()));
+    create(new Operation(cardService.getEnabledById(cardId), sum, LocalDateTime.now()));
   }
 
   @Transactional
   public void transferMoney(Integer cardId, String recipientCardNumb, Integer sum) {
-    Card card = cardService.getById(cardId);
-    Card recipientCard = cardService.getByCardNumb(recipientCardNumb);
+    Card card = cardService.getEnabledById(cardId);
+    Card recipientCard = cardService.getEnabledByCardNumb(recipientCardNumb);
     create(new Operation(card, recipientCardNumb, -sum, LocalDateTime.now()));
     create(new Operation(recipientCard, card.getNumb(), sum, LocalDateTime.now()));
   }
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, LocalDate startDate, LocalDate endDate) {
-    Card card = cardService.getById(cardId);
+    Card card = cardService.getEnabledById(cardId);
     LocalDateTime start = DateTimeUtil.startOrMinDate(startDate);
     LocalDateTime end = DateTimeUtil.endOrMaxDate(endDate);
     return recipientCardNumb == null || recipientCardNumb.isBlank() ?

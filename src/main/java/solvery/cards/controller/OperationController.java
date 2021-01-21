@@ -77,7 +77,7 @@ public class OperationController {
     }
 
     service.transferMoney(
-        cardService.getByCardNumb(operationTransferTo.getCardNumb()).getId(),
+        cardService.getEnabledByCardNumb(operationTransferTo.getCardNumb()).getId(),
         operationTransferTo.getRecipientCardNumb(),
         operationTransferTo.getSum());
     return "redirect:/operation/transfer";

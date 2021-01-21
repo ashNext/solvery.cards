@@ -8,7 +8,7 @@ public class CheckCardValidator extends AbstractCardValidator implements
 
   @Override
   public boolean isValid(String number, ConstraintValidatorContext constraintValidatorContext) {
-    return repository.findByNumb(number).isPresent();
+    return repository.findByNumbAndEnabledTrue(number).isPresent();
   }
 
   @Override

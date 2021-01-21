@@ -49,7 +49,7 @@ public class CardController {
 
   @PostMapping("/close/{id}")
   public String close(@PathVariable Integer id) {
-    Card card = service.getById(id);
+    Card card = service.getEnabledById(id);
     card.setEnabled(false);
     service.update(card);
     return "redirect:/card";

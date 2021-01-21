@@ -31,13 +31,13 @@ public class CardService {
     repository.save(card);
   }
 
-  public Card getById(Integer id) {
-    return repository.findById(id)
+  public Card getEnabledById(Integer id) {
+    return repository.findByIdAndEnabledTrue(id)
         .orElseThrow(() -> new NotFoundException("Card is not found!"));
   }
 
-  public Card getByCardNumb(String cardNumb) {
-    return repository.findByNumb(cardNumb)
+  public Card getEnabledByCardNumb(String cardNumb) {
+    return repository.findByNumbAndEnabledTrue(cardNumb)
         .orElseThrow(() -> new NotFoundException("Card \"" + cardNumb + "\" is not found!"));
   }
 }
