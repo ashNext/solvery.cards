@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-  <title>Error</title>
+  <title>Operation - Add money</title>
 </head>
 <body>
 <div th:insert="commons/header :: navigation"></div>
+<div th:insert="commons/header :: navigation-operations"></div>
 
 <div>
-  <div>
-    <h4 th:text="${message}"></h4>
-  </div>
-  <p>
-    <a href="#" onclick="window.history.back()">Back</a>
-  </p>
+  <h2 th:text="${resultStatus}"></h2>
+  <h3 th:text="${resultMessage}"></h3>
 </div>
 
 <div th:insert="commons/footer :: copyrights"></div>

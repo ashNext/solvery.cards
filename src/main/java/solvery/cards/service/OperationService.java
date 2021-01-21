@@ -1,15 +1,17 @@
 package solvery.cards.service;
 
-import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solvery.cards.model.Card;
 import solvery.cards.model.Operation;
 import solvery.cards.repository.OperationRepository;
+import solvery.cards.util.CardUtil;
+import solvery.cards.util.DateTimeUtil;
+import solvery.cards.util.exception.BalanceOutRangeException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import solvery.cards.util.DateTimeUtil;
 
 @Service
 public class OperationService {
@@ -24,9 +26,7 @@ public class OperationService {
   }
 
   public Operation create(Operation operation) {
-    Integer newBalance = operation.getCard().getBalance() + operation.getSum();
-    operation.getCard().setBalance(newBalance);
-    operation.setCardBalance(newBalance);
+    checkAbilityChangeAndApplyBalance(operation);
     return repository.save(operation);
   }
 
@@ -49,5 +49,22 @@ public class OperationService {
     return recipientCardNumb == null || recipientCardNumb.isBlank() ?
         repository.getByFilter(card, start, end) :
         repository.getByFilterWithRecipientCardNumb(card, recipientCardNumb, start, end);
+  }
+
+  private void checkAbilityChangeAndApplyBalance(Operation operation) {
+    Integer newBalance = operation.getCard().getBalance() + operation.getSum();
+
+    if (newBalance > CardUtil.MAX_BALANCE) {
+      throw new BalanceOutRangeException("Невозможно зачислить средства на карту \""
+          + operation.getCard().getNumb() + "\", т.к. будет первышен лимит баланса");
+    }
+
+    if (newBalance < CardUtil.MIN_BALANCE) {
+      throw new BalanceOutRangeException("На карте \""
+          + operation.getCard().getNumb() + "\" не хватает средств для совершения операции");
+    }
+
+    operation.getCard().setBalance(newBalance);
+    operation.setCardBalance(newBalance);
   }
 }

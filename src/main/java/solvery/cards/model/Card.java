@@ -14,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
+import solvery.cards.util.CardUtil;
 
 @Entity
 @Table(name = "cards", uniqueConstraints = {
@@ -31,12 +32,12 @@ public class Card {
 
   @Column(name = "numb", nullable = false)
   @NotBlank
-  @Size(min = 2, max = 16)
+  @Size(min = CardUtil.MIX_LENGTH_NUMB, max = CardUtil.MAX_LENGTH_NUMB)
   private String numb;
 
   @Column(name = "balance", nullable = false)
   @NotNull
-  @Range(min = 0, max = 999999999)
+  @Range(min = CardUtil.MIN_BALANCE, max = CardUtil.MAX_BALANCE)
   private Integer balance;
 
   @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")

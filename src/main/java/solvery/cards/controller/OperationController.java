@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import solvery.cards.dto.OperationAddTo;
 import solvery.cards.dto.OperationTransferTo;
-import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
 import solvery.cards.service.OperationService;
@@ -37,6 +36,25 @@ public class OperationController {
     return "/operation";
   }
 
+  @GetMapping("/result")
+  public String getResultOperation(@RequestParam @Nullable String type, @RequestParam String status, Model model) {
+    String resultStatus = "Операция не была проведена";
+    if ("ok".equalsIgnoreCase(status)) {
+      resultStatus = "Операция успешно завершена";
+    }
+
+    String message = "";
+    if ("add".equalsIgnoreCase(type)) {
+      message = "Средства зачислены на баланс карты";
+    } else if ("transfer".equalsIgnoreCase(type)) {
+      message = "Средства переведены получателю";
+    }
+
+    model.addAttribute("resultStatus", resultStatus);
+    model.addAttribute("resultMessage", message);
+    return "/operations/result";
+  }
+
   @GetMapping("/add")
   public String getAddMoney(@AuthenticationPrincipal User user, Model model) {
     model.addAttribute("operationAddTo", new OperationAddTo());
@@ -55,7 +73,7 @@ public class OperationController {
       return "/operations/add";
     }
     service.addMoney(operationAddTo.getCard().getId(), operationAddTo.getSum());
-    return "redirect:/operation/add";
+    return "redirect:/operation/result?type=add&status=ok";
   }
 
   @GetMapping("/transfer")
@@ -80,7 +98,7 @@ public class OperationController {
         cardService.getEnabledByCardNumb(operationTransferTo.getCardNumb()).getId(),
         operationTransferTo.getRecipientCardNumb(),
         operationTransferTo.getSum());
-    return "redirect:/operation/transfer";
+    return "redirect:/operation/result?type=transfer&status=ok";
   }
 
   @GetMapping("/history")
