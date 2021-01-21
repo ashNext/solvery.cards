@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import solvery.cards.dto.OperationAddTo;
 import solvery.cards.dto.OperationTransferTo;
+import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
 import solvery.cards.service.OperationService;
+import solvery.cards.util.OperationUtil;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/operation")
@@ -109,10 +112,21 @@ public class OperationController {
       @RequestParam @Nullable LocalDate startDate,
       @RequestParam @Nullable LocalDate endDate,
       Model model) {
-    model.addAttribute("cards", cardService.getAllEnabledByUser(user));
-    if (cardId != null) {
-      model.addAttribute("cardSelected", cardId);
-      model.addAttribute("operations", service.getByFilter(cardId, recipientCardNumber, startDate, endDate));
+    List<Card> cards = cardService.getAllEnabledByUser(user);
+    model.addAttribute("cards", cards);
+
+    if (cardId == null) {
+      cardId = !cards.isEmpty() ? cards.get(0).getId() : null;
+    }
+    model.addAttribute("cardSelected", cardId);
+
+    if (startDate == null && endDate == null) {
+      model.addAttribute("operations",
+          OperationUtil.getListOperationHistoryTo(service.getLast30Days(cardId)));
+    } else {
+      model.addAttribute("operations",
+          OperationUtil.getListOperationHistoryTo(
+              service.getByFilter(cardId, recipientCardNumber, startDate, endDate)));
     }
     return "/operations/history";
   }

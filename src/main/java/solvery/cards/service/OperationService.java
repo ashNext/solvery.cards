@@ -51,6 +51,17 @@ public class OperationService {
         repository.getByFilterWithRecipientCardNumb(card, recipientCardNumb, start, end);
   }
 
+  public List<Operation> getLastNDays(Integer cardId, int days) {
+    Card card = cardService.getEnabledById(cardId);
+    LocalDateTime start = DateTimeUtil.startOrMinDate(LocalDate.now().minusDays(days));
+    LocalDateTime end = LocalDateTime.now();
+    return repository.getByFilter(card, start, end);
+  }
+
+  public List<Operation> getLast30Days(Integer cardId) {
+    return getLastNDays(cardId, 30);
+  }
+
   private void checkAbilityChangeAndApplyBalance(Operation operation) {
     Integer newBalance = operation.getCard().getBalance() + operation.getSum();
 

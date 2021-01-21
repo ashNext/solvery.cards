@@ -11,16 +11,16 @@ import java.util.List;
 
 public interface OperationRepository extends JpaRepository<Operation, Long> {
 
-  @Query("SELECT o FROM Operation o WHERE o.card=:card AND o.dateTime>=:startDate AND o.dateTime<=:endDate")
+  @Query("SELECT o FROM Operation o WHERE o.card=:card AND o.dateTime>=:startDate AND o.dateTime<=:endDate ORDER BY o.dateTime desc")
   List<Operation> getByFilter(
-          @Param("card") Card card,
-          @Param("startDate") LocalDateTime startDate,
-          @Param("endDate") LocalDateTime endDate);
+      @Param("card") Card card,
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
 
-  @Query("SELECT o FROM Operation o WHERE o.card=:card AND o.recipientCardNumb=:recipientCardNumb AND o.dateTime>=:startDate AND o.dateTime<=:endDate")
+  @Query("SELECT o FROM Operation o WHERE o.card=:card AND o.recipientCardNumb=:recipientCardNumb AND o.dateTime>=:startDate AND o.dateTime<=:endDate ORDER BY o.dateTime desc")
   List<Operation> getByFilterWithRecipientCardNumb(
-          @Param("card") Card card,
-          @Param("recipientCardNumb") String recipientCardNumb,
-          @Param("startDate") LocalDateTime startDate,
-          @Param("endDate") LocalDateTime endDate);
+      @Param("card") Card card,
+      @Param("recipientCardNumb") String recipientCardNumb,
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
 }

@@ -32,16 +32,18 @@
     <tr>
       <th>#</th>
       <th>Date</th>
-      <th>Recipient Card Number</th>
+      <th>Purpose of payment</th>
       <th>Sum</th>
+      <th>Balance</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="operation : ${operations}">
+    <tr th:each="operation : ${operations}" th:style="'color: '+(${operation.cashReceipts} ? green : red)+' ;'">
       <td th:text="${operation.id}"></td>
-      <td th:text="${operation.dateTime}"></td>
-      <td th:text="${operation.recipientCardNumb}"></td>
-      <td th:text="${operation.sum}"></td>
+      <td th:text="${#temporals.format(operation.dateTime, 'dd.MM.yyyy HH:mm')}"></td>
+      <td th:text="${operation.purposeOfPayment}"></td>
+      <td th:text="${#numbers.formatDecimal(operation.sum / 100d, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+      <td th:text="${#numbers.formatDecimal(operation.cardBalance / 100d, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
     </tr>
     </tbody>
   </table>
