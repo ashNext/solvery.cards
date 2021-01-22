@@ -1,11 +1,12 @@
 package solvery.cards.util;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 public class DateTimeUtil {
 
@@ -18,16 +19,34 @@ public class DateTimeUtil {
   private DateTimeUtil() {
   }
 
-  public static LocalDateTime startOrMinDate(LocalDate localDate) {
-    return localDate != null ? localDate.atStartOfDay() : MIN_DATE;
+  public static LocalDateTime atStartOfDay(@NotNull LocalDate localDate) {
+    return localDate.atStartOfDay();
   }
 
-  public static LocalDateTime endOrMaxDate(LocalDate localDate) {
-    return localDate != null ? localDate.plusDays(1).atStartOfDay().minus(1, ChronoUnit.NANOS) : MAX_DATE;
+  public static LocalDateTime atStartOfDayOrMinDate(@Nullable LocalDate localDate) {
+    return localDate != null ? atStartOfDay(localDate) : MIN_DATE;
   }
 
-  public static @Nullable
-  LocalDate parseLocalDate(@Nullable String value) {
-    return StringUtils.isEmpty(value) ? null : LocalDate.parse(value);
+  @Nullable
+  public static LocalDateTime atStartOfDayOrNull(@Nullable LocalDate localDate) {
+    return localDate != null ? atStartOfDay(localDate) : null;
+  }
+
+  public static LocalDateTime atEndOfDay(@NotNull LocalDate localDate) {
+    return localDate.atStartOfDay().plusDays(1).minusNanos(1);
+  }
+
+  public static LocalDateTime atEndOfDayOrMaxDate(@Nullable LocalDate localDate) {
+    return localDate != null ? atEndOfDay(localDate) : MAX_DATE;
+  }
+
+  @Nullable
+  public static LocalDateTime atEndOfDayOrNull(@Nullable LocalDate localDate) {
+    return localDate != null ? atEndOfDay(localDate) : null;
+  }
+
+  @Nullable
+  public static LocalDate parseLocalDate(@Nullable String value) {
+    return StringUtils.hasText(value) ? LocalDate.parse(value) : null;
   }
 }

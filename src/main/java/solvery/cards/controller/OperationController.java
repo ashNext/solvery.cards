@@ -109,24 +109,25 @@ public class OperationController {
       @AuthenticationPrincipal User user,
       @RequestParam @Nullable Integer cardId,
       @RequestParam @Nullable String recipientCardNumber,
+      @RequestParam(defaultValue = "0") Integer directionId,
+      @RequestParam(defaultValue = "0") Integer typeId,
       @RequestParam @Nullable LocalDate startDate,
       @RequestParam @Nullable LocalDate endDate,
       Model model) {
     List<Card> cards = cardService.getAllEnabledByUser(user);
     model.addAttribute("cards", cards);
+    model.addAttribute("directionSelected", directionId);
+    model.addAttribute("typeSelected", typeId);
 
     if (cardId == null) {
       cardId = !cards.isEmpty() ? cards.get(0).getId() : null;
     }
     model.addAttribute("cardSelected", cardId);
 
-    if (startDate == null && endDate == null) {
-      model.addAttribute("operations",
-          OperationUtil.getListOperationHistoryTo(service.getLast30Days(cardId)));
-    } else {
+    if (cardId != null) {
       model.addAttribute("operations",
           OperationUtil.getListOperationHistoryTo(
-              service.getByFilter(cardId, recipientCardNumber, startDate, endDate)));
+              service.getByFilter(cardId, recipientCardNumber, directionId, typeId, startDate, endDate)));
     }
     return "/operations/history";
   }

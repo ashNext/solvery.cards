@@ -15,8 +15,27 @@
   <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>
   <div>
     <form th:id="${formname}" th:action="@{/operation/history}" method="get">
+      <div>
+        <label>Type of transaction:
+          <select name="typeId">
+            <option th:value="0" th:selected="0==${typeSelected}">All</option>
+            <option th:value="1" th:selected="1==${typeSelected}">Cash</option>
+            <option th:value="2" th:selected="2==${typeSelected}">Transfer</option>
+          </select>
+        </label>
+      </div>
+
       <div><label>Recipient card number: <input type="text" name="recipientCardNumber"
                                                 th:value="${param.recipientCardNumber}"/></label>
+      </div>
+      <div>
+        <label>Money movement:
+          <select name="directionId">
+            <option th:value="0" th:selected="0==${directionSelected}">In both directions</option>
+            <option th:value="1" th:selected="1==${directionSelected}">Cash receipts</option>
+            <option th:value="-1" th:selected="-1==${directionSelected}">Spending of money</option>
+          </select>
+        </label>
       </div>
       <div><label>Start date: <input type="date" name="startDate"
                                      th:value="${param.startDate}"/></label></div>
@@ -31,6 +50,7 @@
   </div>
 
   <div th:if="${not #lists.isEmpty(operations)}" th:insert="commons/lists :: historyList"></div>
+  <div th:insert="commons/footer :: copyrights"></div>
 </div>
 </body>
 </html>

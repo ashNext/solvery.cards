@@ -1,17 +1,21 @@
 package solvery.cards.service;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import solvery.cards.model.Card;
 import solvery.cards.model.Operation;
 import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.CardUtil;
-import solvery.cards.util.DateTimeUtil;
 import solvery.cards.util.exception.BalanceOutRangeException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static solvery.cards.util.specification.OperationSpecification.*;
 
 @Service
 public class OperationService {
@@ -42,24 +46,26 @@ public class OperationService {
     create(new Operation(recipientCard, card.getNumb(), sum, LocalDateTime.now()));
   }
 
-  public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, LocalDate startDate, LocalDate endDate) {
+  public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId, int typeId, LocalDate startDate, LocalDate endDate) {
     Card card = cardService.getEnabledById(cardId);
-    LocalDateTime start = DateTimeUtil.startOrMinDate(startDate);
-    LocalDateTime end = DateTimeUtil.endOrMaxDate(endDate);
-    return recipientCardNumb == null || recipientCardNumb.isBlank() ?
-        repository.getByFilter(card, start, end) :
-        repository.getByFilterWithRecipientCardNumb(card, recipientCardNumb, start, end);
-  }
 
-  public List<Operation> getLastNDays(Integer cardId, int days) {
-    Card card = cardService.getEnabledById(cardId);
-    LocalDateTime start = DateTimeUtil.startOrMinDate(LocalDate.now().minusDays(days));
-    LocalDateTime end = LocalDateTime.now();
-    return repository.getByFilter(card, start, end);
-  }
+    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null && directionId == 0 && typeId == 0) {
+      startDate = LocalDate.now().minusDays(2);
+      endDate = LocalDate.now();
+    }
 
-  public List<Operation> getLast30Days(Integer cardId) {
-    return getLastNDays(cardId, 30);
+    if (StringUtils.hasText(recipientCardNumb) && typeId == 1) {
+      recipientCardNumb = null;
+    }
+
+    return repository.findAll(
+        Specification.where(withCard(card))
+            .and(withRecipient(recipientCardNumb))
+            .and(withDirection(directionId))
+            .and(withType(typeId))
+            .and(fromDate(startDate))
+            .and(toDate(endDate)),
+        Sort.by(Sort.Direction.DESC, "dateTime"));
   }
 
   private void checkAbilityChangeAndApplyBalance(Operation operation) {
