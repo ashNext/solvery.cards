@@ -29,13 +29,12 @@
           Error recipientCardNumb</span><br>
         <label>Recipient card number: <input type="text" th:field="*{recipientCardNumb}"/></label>
       </div>
-      <div>
-        <span th:if="${#fields.hasErrors('sum')}" th:errors="*{sum}" style="color: red; ">Error sum</span><br>
-        <label>Sum: <input type="text" th:field="*{sum}"/> </label>
-      </div>
+
+      <div th:insert="commons/controls :: sum"></div>
       <input type="submit" value="Transfer money"/>
     </form>
   </div>
 </div>
+<div th:insert="commons/footer :: copyrights"></div>
 </body>
 </html>

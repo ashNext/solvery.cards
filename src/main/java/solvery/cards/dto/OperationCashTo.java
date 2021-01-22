@@ -5,7 +5,7 @@ import solvery.cards.model.Card;
 
 import javax.validation.constraints.NotNull;
 
-public class OperationAddTo {
+public class OperationCashTo {
 
   private Integer id;
 
@@ -16,10 +16,10 @@ public class OperationAddTo {
   @Range(min = 1, max = 999999999)
   private Integer sum;
 
-  public OperationAddTo() {
+  public OperationCashTo() {
   }
 
-  public OperationAddTo(Integer id, @NotNull Card card, @NotNull @Range(min = 1, max = 999999999) Integer sum) {
+  public OperationCashTo(Integer id, @NotNull Card card, @NotNull @Range(min = 1, max = 999999999) Integer sum) {
     this.id = id;
     this.card = card;
     this.sum = sum;

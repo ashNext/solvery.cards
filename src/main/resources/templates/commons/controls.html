@@ -12,5 +12,10 @@
     </select>
   </label>
 </div>
+
+<div th:fragment="sum">
+  <span th:if="${#fields.hasErrors('sum')}" th:errors="*{sum}" style="color: red; ">Error sum</span><br>
+  <label> Sum: <input type="number" min="1" max="999999999" th:field="*{sum}"/></label>
+</div>
 </body>
 </html>

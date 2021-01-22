@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import solvery.cards.dto.OperationAddTo;
+import solvery.cards.dto.OperationCashTo;
 import solvery.cards.dto.OperationTransferTo;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
@@ -49,6 +49,8 @@ public class OperationController {
     String message = "";
     if ("add".equalsIgnoreCase(type)) {
       message = "Средства зачислены на баланс карты";
+    } else if ("withdraw".equalsIgnoreCase(type)) {
+      message = "Средства сняты с баланса карты";
     } else if ("transfer".equalsIgnoreCase(type)) {
       message = "Средства переведены получателю";
     }
@@ -60,7 +62,7 @@ public class OperationController {
 
   @GetMapping("/add")
   public String getAddMoney(@AuthenticationPrincipal User user, Model model) {
-    model.addAttribute("operationAddTo", new OperationAddTo());
+    model.addAttribute("operationCashTo", new OperationCashTo());
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     return "/operations/add";
   }
@@ -68,15 +70,36 @@ public class OperationController {
   @PostMapping("/add")
   public String addMoney(
       @AuthenticationPrincipal User user,
-      @Valid OperationAddTo operationAddTo,
+      @Valid OperationCashTo operationCashTo,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("cards", cardService.getAllEnabledByUser(user));
       return "/operations/add";
     }
-    service.addMoney(operationAddTo.getCard().getId(), operationAddTo.getSum());
+    service.addMoney(operationCashTo.getCard().getId(), operationCashTo.getSum());
     return "redirect:/operation/result?type=add&status=ok";
+  }
+
+  @GetMapping("/withdraw")
+  public String getWithdrawMoney(@AuthenticationPrincipal User user, Model model) {
+    model.addAttribute("operationCashTo", new OperationCashTo());
+    model.addAttribute("cards", cardService.getAllEnabledByUser(user));
+    return "/operations/withdraw";
+  }
+
+  @PostMapping("/withdraw")
+  public String withdrawMoney(
+      @AuthenticationPrincipal User user,
+      @Valid OperationCashTo operationCashTo,
+      BindingResult bindingResult,
+      Model model) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("cards", cardService.getAllEnabledByUser(user));
+      return "/operations/withdraw";
+    }
+    service.withdrawMoney(operationCashTo.getCard().getId(), operationCashTo.getSum());
+    return "redirect:/operation/result?type=withdraw&status=ok";
   }
 
   @GetMapping("/transfer")

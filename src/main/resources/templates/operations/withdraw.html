@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-  <title>Operation - Add money</title>
+  <title>Operation - Withdraw money</title>
 </head>
 <body>
 <div th:insert="commons/header :: navigation"></div>
@@ -12,9 +12,9 @@
 </div>
 
 <div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-add'">
-<!--  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>-->
+  <!--  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>-->
   <div>
-    <form th:id="${formname}" th:action="@{/operation/add}" th:object="${operationCashTo}" method="post">
+    <form th:id="${formname}" th:action="@{/operation/withdraw}" th:object="${operationCashTo}" method="post">
 
       <div>
         <label>Current card:
@@ -25,7 +25,7 @@
       </div>
 
       <div th:insert="commons/controls :: sum"></div>
-      <input type="submit" value="Add sum"/>
+      <input type="submit" value="Withdraw money"/>
     </form>
   </div>
 </div>

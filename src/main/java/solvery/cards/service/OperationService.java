@@ -34,16 +34,28 @@ public class OperationService {
     return repository.save(operation);
   }
 
+  private void moveMoneyByCardId(Integer cardId, String recipientCardNumb, Integer sum) {
+    moveMoney(cardService.getEnabledById(cardId), recipientCardNumb, sum);
+  }
+
+  private void moveMoney(Card card, String recipientCardNumb, Integer sum) {
+    create(new Operation(card, recipientCardNumb, sum, LocalDateTime.now()));
+  }
+
   public void addMoney(Integer cardId, Integer sum) {
-    create(new Operation(cardService.getEnabledById(cardId), sum, LocalDateTime.now()));
+    moveMoneyByCardId(cardId, null, sum);
+  }
+
+  public void withdrawMoney(Integer cardId, Integer sum) {
+    moveMoneyByCardId(cardId, null, -sum);
   }
 
   @Transactional
   public void transferMoney(Integer cardId, String recipientCardNumb, Integer sum) {
     Card card = cardService.getEnabledById(cardId);
     Card recipientCard = cardService.getEnabledByCardNumb(recipientCardNumb);
-    create(new Operation(card, recipientCardNumb, -sum, LocalDateTime.now()));
-    create(new Operation(recipientCard, card.getNumb(), sum, LocalDateTime.now()));
+    moveMoney(card, recipientCardNumb, -sum);
+    moveMoney(recipientCard, card.getNumb(), sum);
   }
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId, int typeId, LocalDate startDate, LocalDate endDate) {
