@@ -12,7 +12,6 @@
 </div>
 
 <div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-transfer'">
-<!--  <div th:insert="commons/controls :: dropdown-cards (${formname})"></div>-->
   <div>
     <form th:id="${formname}" th:action="@{/operation/transfer}" th:object="${operationTransferTo}" method="post">
 

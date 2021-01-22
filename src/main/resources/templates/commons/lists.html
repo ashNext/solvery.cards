@@ -5,17 +5,15 @@
   <table>
     <thead>
     <tr>
-      <th>#</th>
-      <th>Number</th>
+      <th>Card number</th>
       <th>Balance</th>
       <th>Actions</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="card : ${cards}">
-      <td th:text="${card.id}"></td>
       <td th:text="${card.numb}"></td>
-      <td th:text="${card.balance}"></td>
+      <td th:text="${#numbers.formatDecimal(card.balance / 100d, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
       <td>
         <form th:action="@{'/card/close/{id}'(id=${card.id})}" method="post">
           <input type="submit" value="Close"/>
