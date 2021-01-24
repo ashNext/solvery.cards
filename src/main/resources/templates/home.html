@@ -6,8 +6,8 @@
 </head>
 <body>
 <div th:insert="commons/header :: navigation"></div>
-<h1 sec:authorize="!isAuthenticated()">Welcome!</h1>
-<h1 sec:authorize="isAuthenticated()">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+<h1 sec:authorize="!isAuthenticated()" th:text="#{app.welcome}"></h1>
+<h1 sec:authorize="isAuthenticated()" th:text="#{app.greeting}+', '+${#httpServletRequest.remoteUser}+'!'"></h1>
 
 <div th:insert="commons/footer :: copyrights"></div>
 </body>

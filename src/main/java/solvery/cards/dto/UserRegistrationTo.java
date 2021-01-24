@@ -9,32 +9,32 @@ import solvery.cards.validator.FieldsValueMatch;
     @FieldsValueMatch(
         field = "confirmPassword",
         fieldMatch = "password",
-        message = "Подтверждение пароля не совпадает"
+        message = "{user.matchRetypePassword}"
     )
 })
 public class UserRegistrationTo {
 
   private Integer id;
 
-  @NotBlank
-  @Size(min = 2, max = 100)
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = 2, max = 100, message = "{user.userNameSize}")
   private String username;
 
-  @NotBlank
-  @Size(min = 1, max = 100)
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = 1, max = 100, message = "{user.passwordSize}")
   private String password;
 
-  @NotBlank
-  @Size(min = 1, max = 100)
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = 1, max = 100, message = "{user.retypePasswordSize}")
   private String confirmPassword;
 
-  @NotBlank
-  @Size(min = 2, max = 100)
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = 2, max = 100, message = "{user.fullNameSize}")
   private String fullName;
 
-  @Email
-  @NotBlank
-  @Size(max = 100)
+  @Email(message = "{user.emailFormat}")
+  @NotBlank(message = "{common.notBlank}")
+  @Size(max = 100, message = "{user.emailSize}")
   private String email;
 
   public UserRegistrationTo() {

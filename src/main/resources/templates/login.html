@@ -6,17 +6,17 @@
 <body>
 <div th:insert="commons/header :: navigation"></div>
 
-<div th:if="${param.error}">
-  Invalid username or password.
+<div th:if="${param.error}" th:text="#{login.error}">
+  Invalid username or password
 </div>
-<div th:if="${param.logout}">
-  You have been logged out.
+<div th:if="${param.logout}" th:text="#{login.logout}">
+  You have been logged out
 </div>
 <form th:action="@{/login}" method="post">
-  <div><label> Username : <input type="text" name="username"/> </label></div>
-  <div><label> Password: <input type="password" name="password"/> </label></div>
-  <div><input type="submit" value="Sign In"/></div>
+  <div><label> [[#{user.username}]]: <input type="text" name="username"/> </label></div>
+  <div><label> [[#{user.password}]]: <input type="password" name="password"/> </label></div>
+  <div><input type="submit" th:value="#{login.in}"/></div>
 </form>
-<a th:href="@{/registration}">Registration</a>
+<a th:href="@{/registration}" th:text="#{login.reg}">Registration</a>
 </body>
 </html>

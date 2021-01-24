@@ -5,9 +5,9 @@
   <table>
     <thead>
     <tr>
-      <th>Card number</th>
-      <th>Balance</th>
-      <th>Actions</th>
+      <th th:text="#{card.numb}">Card number</th>
+      <th th:text="#{card.balance}">Balance</th>
+      <th th:text="#{misc.actions}">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -16,7 +16,7 @@
       <td th:text="${#numbers.formatDecimal(card.balance / 100d, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
       <td>
         <form th:action="@{'/card/close/{id}'(id=${card.id})}" method="post">
-          <input type="submit" value="Close"/>
+          <input type="submit" th:value="#{misc.close}"/>
         </form>
       </td>
     </tr>
@@ -29,10 +29,10 @@
     <thead>
     <tr>
       <th>#</th>
-      <th>Date</th>
-      <th>Purpose of payment</th>
-      <th>Sum</th>
-      <th>Balance</th>
+      <th th:text="#{operation.dateTime}">Date</th>
+      <th th:text="#{history.purposeOfPayment}">Purpose of payment</th>
+      <th th:text="#{operation.sum}">Sum</th>
+      <th th:text="#{history.cardBalance}">Balance</th>
     </tr>
     </thead>
     <tbody>

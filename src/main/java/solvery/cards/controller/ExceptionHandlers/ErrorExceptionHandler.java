@@ -1,5 +1,6 @@
 package solvery.cards.controller.ExceptionHandlers;
 
+import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,15 +11,14 @@ import solvery.cards.util.ValidationUtil;
 import solvery.cards.util.exception.BalanceOutRangeException;
 import solvery.cards.util.exception.NotFoundException;
 
-import java.util.Map;
-
 @ControllerAdvice
 public class ErrorExceptionHandler {
+
   private static final String DEFAULT_ERROR_VIEW = "error";
 
-  private static final String EXCEPTION_DUPLICATE_CARD = "Уже зарегистрирована карта с таким номером";
-  private static final String EXCEPTION_DUPLICATE_USERNAME = "Имя пользователя уже занято";
-  private static final String EXCEPTION_DUPLICATE_EMAIL = "Пользователь с таким E-mail уже существует";
+  public static final String EXCEPTION_DUPLICATE_CARD = "card.uniqueCardNumber";
+  public static final String EXCEPTION_DUPLICATE_USERNAME = "user.userNameExist";
+  public static final String EXCEPTION_DUPLICATE_EMAIL = "user.emailExist";
 
   private static final Map<String, String> MAP_DUPLICATE_EXCEPTION = Map.of(
       "cards_unique_numb_idx", EXCEPTION_DUPLICATE_CARD,

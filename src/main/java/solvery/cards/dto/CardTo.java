@@ -2,7 +2,6 @@ package solvery.cards.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
 import solvery.cards.util.CardUtil;
 import solvery.cards.validator.card.UniqueCardNumber;
 
@@ -10,9 +9,9 @@ public class CardTo {
 
   private Integer id;
 
-  @NotBlank
-  @Size(min = CardUtil.MIX_LENGTH_NUMB, max = CardUtil.MAX_LENGTH_NUMB)
-  @UniqueCardNumber(message = "Уже зарегистрирована карта с таким номером!")
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = CardUtil.MIX_LENGTH_NUMB, max = CardUtil.MAX_LENGTH_NUMB, message = "{card.numbSize}")
+  @UniqueCardNumber(message = "{card.uniqueCardNumber}")
   private String numb;
 
   private Integer balance;

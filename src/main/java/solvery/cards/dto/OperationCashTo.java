@@ -1,19 +1,18 @@
 package solvery.cards.dto;
 
+import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 import solvery.cards.model.Card;
-
-import javax.validation.constraints.NotNull;
 
 public class OperationCashTo {
 
   private Integer id;
 
-  @NotNull
+  @NotNull(message = "{common.notBlank}")
   private Card card;
 
-  @NotNull
-  @Range(min = 1, max = 999999999)
+  @NotNull(message = "{common.notBlank}")
+  @Range(min = 1, max = 999999999, message = "{operation.sumRange}")
   private Integer sum;
 
   public OperationCashTo() {

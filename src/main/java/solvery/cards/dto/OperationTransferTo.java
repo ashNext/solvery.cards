@@ -12,25 +12,25 @@ import solvery.cards.validator.card.CheckCardAvailability;
         field = "recipientCardNumb",
         fieldMatch = "cardNumb",
         mustMatch = false,
-        message = "Номер карты получателя не может совпадать с номером карты отправителя!"
+        message = "{operation.noMatchCardNumber}"
     )
 })
 public class OperationTransferTo {
 
   private Integer id;
 
-  @NotBlank
-  @Size(min = 2, max = 16)
-  @CheckCardAvailability(message = "Карта отправителя не найдена")
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = 2, max = 16, message = "{card.numbSize}")
+  @CheckCardAvailability(message = "{operation.notFoundCardSender}")
   private String cardNumb;
 
-  @NotNull
-  @Range(min = 1, max = 999999999)
+  @NotNull(message = "{common.notBlank}")
+  @Range(min = 1, max = 999999999, message = "{operation.sumRange}")
   private Integer sum;
 
-  @NotBlank
-  @Size(min = 2, max = 16)
-  @CheckCardAvailability(message = "Карта получателя не найдена")
+  @NotBlank(message = "{common.notBlank}")
+  @Size(min = 2, max = 16, message = "{card.numbSize}")
+  @CheckCardAvailability(message = "{operation.notFoundCardRecipient}")
   private String recipientCardNumb;
 
   public OperationTransferTo() {

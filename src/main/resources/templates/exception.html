@@ -14,7 +14,7 @@
   </div>
 
   <p>
-    <a href="#" onclick="window.history.back()">Back</a>
+    <a href="#" onclick="window.history.back()" th:text="#{mic.back}">Back</a>
   </p>
 
   <div th:if="${not #lists.isEmpty(exception.stackTrace)}"

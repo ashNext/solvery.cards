@@ -1,6 +1,7 @@
 package solvery.cards.validator.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import solvery.cards.dto.UserRegistrationTo;
@@ -10,6 +11,9 @@ public abstract class AbstractUserValidator implements Validator {
 
   @Autowired
   protected UserRepository repository;
+
+  @Autowired
+  protected MessageSourceAccessor messageSourceAccessor;
 
   @Override
   public boolean supports(Class<?> aClass) {

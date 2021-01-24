@@ -11,9 +11,9 @@
     <form th:action="@{/card}" method="post" th:object="${cardTo}">
       <div>
         <span th:if="${#fields.hasErrors('numb')}" th:errors="*{numb}" style="color: red; ">Error numb</span><br>
-        <label> Number : <input type="text" th:field="*{numb}"/> </label>
+        <label> [[#{card.numb}]]: <input type="text" th:field="*{numb}"/> </label>
       </div>
-      <input type="submit" value="Add card"/>
+      <input type="submit" th:value="#{card.add}"/>
     </form>
   </div>
 

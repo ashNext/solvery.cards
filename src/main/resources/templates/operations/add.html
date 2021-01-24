@@ -7,8 +7,7 @@
 <div th:insert="commons/header :: navigation"></div>
 <div th:insert="commons/header :: navigation-operations"></div>
 
-<div th:if="${#lists.isEmpty(cards)}">
-  No cards available!
+<div th:if="${#lists.isEmpty(cards)}" th:text="#{card.noCard}">
 </div>
 
 <div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-add'">
@@ -16,7 +15,7 @@
     <form th:id="${formname}" th:action="@{/operation/add}" th:object="${operationCashTo}" method="post">
 
       <div>
-        <label>Current card:
+        <label> [[#{card.numb}]]:
           <select th:form="${formname}" th:field="*{card}">
             <option th:each="c : ${cards}" th:text="${c.numb}" th:value="${c.id}"></option>
           </select>
@@ -24,7 +23,7 @@
       </div>
 
       <div th:insert="commons/controls :: sum"></div>
-      <input type="submit" value="Add sum"/>
+      <input type="submit" th:value="#{operation.add}"/>
     </form>
   </div>
 </div>

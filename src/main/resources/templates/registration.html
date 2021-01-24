@@ -9,27 +9,27 @@
 <form th:action="@{/registration}" method="post" th:object="${userRegistrationTo}">
   <div>
     <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red; ">Error username</span><br>
-    <label> Username : <input type="text" th:field="*{username}"/> </label>
+    <label> [[#{user.username}]]: <input type="text" th:field="*{username}"/> </label>
   </div>
   <div>
     <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" style="color: red; ">Error fullName</span><br>
-    <label> Full name : <input type="text" th:field="*{fullName}"/> </label>
+    <label> [[#{user.fullName}]]: <input type="text" th:field="*{fullName}"/> </label>
   </div>
   <div>
     <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red; ">Error email</span><br>
-    <label> E-mail : <input type="email" th:field="*{email}"/> </label>
+    <label> [[#{user.email}]]: <input type="email" th:field="*{email}"/> </label>
   </div>
   <div>
     <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red; ">Password</span><br>
-    <label> Password: <input type="password" th:field="*{password}"/> </label>
+    <label> [[#{user.password}]]: <input type="password" th:field="*{password}"/> </label>
   </div>
   <div>
     <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" style="color: red; ">Confirm password</span><br>
-    <label> Retype password: <input type="password" th:field="*{confirmPassword}"/> </label>
+    <label> [[#{user.retypePassword}]]: <input type="password" th:field="*{confirmPassword}"/> </label>
   </div>
-  <div><input type="submit" value="Sign up"/></div>
+  <div><input type="submit" th:value="#{login.reg}"/></div>
 </form>
-<a th:href="@{/login}">Login</a>
+<a th:href="@{/login}" th:text="#{login.in}">Login</a>
 
 <div th:insert="commons/footer :: copyrights"></div>
 </body>

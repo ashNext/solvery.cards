@@ -3,26 +3,34 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <body>
 <nav th:fragment="navigation">
+  <div th:with="path=${#request.getContextPath()}">
+    <span>
+      <a th:href="@{${path}(lang=ru)}" th:text="#{lang.rus}">ru</a>
+      <a th:href="@{${path}(lang=en)}" th:text="#{lang.eng}">en</a>
+<!--      <a href="?lang=ru" >ru2</a>-->
+<!--      <a href="?lang=en" >en2</a>-->
+    </span>
+  </div>
   <div>
     <ul>
       <li>
-        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/home}" th:text="#{nav.home}">Home</a>
       </li>
       <li sec:authorize="isAuthenticated()">
-        <a th:href="@{/card}">Cards</a>
+        <a th:href="@{/card}" th:text="#{nav.cards}">Cards</a>
       </li>
       <li sec:authorize="isAuthenticated()">
-        <a th:href="@{/operation}">Operations</a>
+        <a th:href="@{/operation}" th:text="#{nav.operation}">Operations</a>
       </li>
     </ul>
     <div sec:authorize="!isAuthenticated()">
       <form th:action="@{/login}" method="get">
-        <button type="submit">Log in</button>
+        <button type="submit" th:text="#{login.in}">Log in</button>
       </form>
     </div>
     <div sec:authorize="isAuthenticated()">
       <form th:action="@{/logout}" method="post">
-        <button type="submit">Log out</button>
+        <button type="submit" th:text="#{login.out}">Log out</button>
       </form>
     </div>
   </div>
@@ -32,16 +40,16 @@
   <div>
     <ul>
       <li>
-        <a th:href="@{/operation/add}">Add money</a>
+        <a th:href="@{/operation/add}" th:text="#{operation.add}">Add money</a>
       </li>
       <li>
-        <a th:href="@{/operation/withdraw}">Withdraw money</a>
+        <a th:href="@{/operation/withdraw}" th:text="#{operation.withdraw}">Withdraw money</a>
       </li>
       <li>
-        <a th:href="@{/operation/transfer}">Transfer money</a>
+        <a th:href="@{/operation/transfer}" th:text="#{operation.transfer}">Transfer money</a>
       </li>
       <li>
-        <a th:href="@{/operation/history}">Transactions history</a>
+        <a th:href="@{/operation/history}" th:text="#{operation.history}">Transactions history</a>
       </li>
     </ul>
   </div>

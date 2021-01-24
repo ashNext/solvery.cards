@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <body>
 <div th:fragment="dropdown-cards (formname)">
-  <label>Current card:
+  <label> [[#{card.numb}]]:
     <select th:form="${formname}" name="cardId">
       <option th:each="c : ${cards}"
               th:text="${c.numb}"
@@ -15,7 +15,7 @@
 
 <div th:fragment="sum">
   <span th:if="${#fields.hasErrors('sum')}" th:errors="*{sum}" style="color: red; ">Error sum</span><br>
-  <label> Sum: <input type="number" min="1" max="999999999" th:field="*{sum}"/></label>
+  <label> [[#{operation.sum}]]: <input type="number" min="1" max="999999999" th:field="*{sum}"/></label>
 </div>
 </body>
 </html>

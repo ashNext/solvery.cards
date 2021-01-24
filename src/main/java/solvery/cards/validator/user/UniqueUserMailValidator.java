@@ -2,6 +2,7 @@ package solvery.cards.validator.user;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler;
 import solvery.cards.dto.UserRegistrationTo;
 import solvery.cards.model.User;
 
@@ -14,7 +15,8 @@ public class UniqueUserMailValidator extends AbstractUserValidator {
     User user = repository.getByEmail(userTo.getEmail().toLowerCase());
 
     if (user != null) {
-      errors.rejectValue("email", user.getEmail(), null, "Пользователь с таким E-mail уже существует");
+      errors.rejectValue("email", user.getEmail(), null, messageSourceAccessor.getMessage(
+          ErrorExceptionHandler.EXCEPTION_DUPLICATE_EMAIL));
     }
   }
 }

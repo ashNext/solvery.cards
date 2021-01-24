@@ -1,5 +1,6 @@
 package solvery.cards.service;
 
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,9 +16,14 @@ public class UserService implements UserDetailsService {
 
   private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+  private final MessageSourceAccessor messageSourceAccessor;
+
+  public UserService(UserRepository repository,
+      PasswordEncoder passwordEncoder,
+      MessageSourceAccessor messageSourceAccessor) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
+    this.messageSourceAccessor = messageSourceAccessor;
   }
 
   public User getByUsername(String username) {
@@ -31,6 +37,11 @@ public class UserService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return repository.findByUsername(username);
+    User user = repository.findByUsername(username);
+    if (user == null) {
+      throw new UsernameNotFoundException(
+          messageSourceAccessor.getMessage("user.userNameNotFound"));
+    }
+    return user;
   }
 }

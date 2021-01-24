@@ -2,6 +2,7 @@ package solvery.cards.validator.user;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler;
 import solvery.cards.dto.UserRegistrationTo;
 import solvery.cards.model.User;
 
@@ -14,7 +15,8 @@ public class UniqueUserUsernameValidator extends AbstractUserValidator {
     User user = repository.findByUsername(userTo.getUsername().toLowerCase());
 
     if (user != null) {
-      errors.rejectValue("username", user.getUsername(), null, "Имя пользователя уже занято");
+      errors.rejectValue("username", user.getUsername(), null, messageSourceAccessor.getMessage(
+          ErrorExceptionHandler.EXCEPTION_DUPLICATE_USERNAME));
     }
   }
 }
