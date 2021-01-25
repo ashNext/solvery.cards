@@ -17,7 +17,7 @@ import solvery.cards.validator.card.CheckCardAvailability;
 })
 public class OperationTransferTo {
 
-  private Integer id;
+  private Long id;
 
   @NotBlank(message = "{common.notBlank}")
   @Size(min = 2, max = 16, message = "{card.numbSize}")
@@ -37,7 +37,7 @@ public class OperationTransferTo {
   }
 
   public OperationTransferTo(
-      Integer id,
+      Long id,
       @NotBlank @Size(min = 2, max = 16) String cardNumb,
       @NotNull @Range(min = 1, max = 999999999) Integer sum,
       @NotBlank @Size(min = 2, max = 16) String recipientCardNumb) {
@@ -47,11 +47,11 @@ public class OperationTransferTo {
     this.recipientCardNumb = recipientCardNumb;
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

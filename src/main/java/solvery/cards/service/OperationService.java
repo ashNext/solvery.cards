@@ -81,7 +81,7 @@ public class OperationService {
   }
 
   private void checkAbilityChangeAndApplyBalance(Operation operation) {
-    Integer newBalance = operation.getCard().getBalance() + operation.getSum();
+    int newBalance = operation.getCard().getBalance() + operation.getSum();
 
     if (newBalance > CardUtil.MAX_BALANCE) {
       throw new BalanceOutRangeException("Невозможно зачислить средства на карту \""

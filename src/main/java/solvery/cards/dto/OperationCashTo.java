@@ -6,7 +6,7 @@ import solvery.cards.model.Card;
 
 public class OperationCashTo {
 
-  private Integer id;
+  private Long id;
 
   @NotNull(message = "{common.notBlank}")
   private Card card;
@@ -18,17 +18,17 @@ public class OperationCashTo {
   public OperationCashTo() {
   }
 
-  public OperationCashTo(Integer id, @NotNull Card card, @NotNull @Range(min = 1, max = 999999999) Integer sum) {
+  public OperationCashTo(Long id, @NotNull Card card, @NotNull @Range(min = 1, max = 999999999) Integer sum) {
     this.id = id;
     this.card = card;
     this.sum = sum;
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
