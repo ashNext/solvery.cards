@@ -85,6 +85,14 @@
       <version>7.5.1</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.7.7</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

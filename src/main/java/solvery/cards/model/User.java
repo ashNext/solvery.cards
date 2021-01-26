@@ -1,5 +1,6 @@
 package solvery.cards.model;
 
+import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -146,5 +147,41 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return enabled;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    User user = (User) o;
+    return enabled == user.enabled &&
+        Objects.equals(id, user.id) &&
+        Objects.equals(username, user.username) &&
+        Objects.equals(password, user.password) &&
+        Objects.equals(fullName, user.fullName) &&
+        Objects.equals(email, user.email) &&
+        Objects.equals(roles, user.roles);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, username, password, fullName, email, enabled, roles);
+  }
+
+  @Override
+  public String toString() {
+    return "User{" +
+        "id=" + id +
+        ", username='" + username + '\'' +
+        ", password='" + password + '\'' +
+        ", fullName='" + fullName + '\'' +
+        ", email='" + email + '\'' +
+        ", enabled=" + enabled +
+        ", roles=" + roles +
+        '}';
   }
 }
