@@ -17,12 +17,12 @@ drop sequence if exists users_id_seq;
 create sequence users_id_seq start 1 increment 1;
 create table users
 (
-    id        int4 primary key  not null,
-    username  varchar(100)      not null,
-    email     varchar(100)      not null,
-    full_name varchar(100)      not null,
-    password  varchar(100)      not null,
-    enabled   bool default true not null,
+    id        int4 primary key default nextval('users_id_seq'),
+    username  varchar(100)                  not null,
+    email     varchar(100)                  not null,
+    full_name varchar(100)                  not null,
+    password  varchar(100)                  not null,
+    enabled   bool             default true not null,
     constraint users_unique_username_idx unique (username),
     constraint users_unique_email_idx unique (email)
 );
@@ -38,11 +38,11 @@ create table user_role
 create sequence cards_id_seq start 1 increment 1;
 create table cards
 (
-    id      int4 primary key  not null,
-    user_id int4              not null,
-    numb    varchar(16)       not null,
-    balance int4 default 0    not null check (balance <= 999999999 AND balance >= 0),
-    enabled bool default true not null,
+    id      int4 primary key default nextval('cards_id_seq'),
+    user_id int4                          not null,
+    numb    varchar(16)                   not null,
+    balance int4             default 0    not null check (balance <= 999999999 AND balance >= 0),
+    enabled bool             default true not null,
     constraint cards_unique_numb_idx unique (numb),
     constraint fk_cards_user_id_users_id foreign key (user_id) references users (id) on delete cascade
 );
@@ -50,11 +50,11 @@ create table cards
 create sequence operations_id_seq start 1 increment 1;
 create table operations
 (
-    id                  int8 primary key        not null,
-    card_id             int4                    not null,
+    id                  int8 primary key default nextval('operations_id_seq'),
+    card_id             int4                           not null,
     recipient_card_numb varchar(16),
-    date_time           timestamp default now() not null,
-    sum                 int4                    not null check (sum >= -999999999 AND sum <= 999999999),
-    card_balance        int4                    not null check (card_balance <= 999999999 AND card_balance >= 0),
+    date_time           timestamp        default now() not null,
+    sum                 int4                           not null check (sum >= -999999999 AND sum <= 999999999),
+    card_balance        int4                           not null check (card_balance <= 999999999 AND card_balance >= 0),
     constraint fk_operations_card_id_cards_id foreign key (card_id) references cards (id) on delete cascade
 );
