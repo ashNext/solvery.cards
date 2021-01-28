@@ -1,6 +1,8 @@
 package solvery.cards.model;
 
+import java.util.Collections;
 import java.util.Objects;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -59,12 +61,27 @@ public class User implements UserDetails {
   public User() {
   }
 
-  public User(Integer id, String username, String password, String fullName, String email) {
+  public User(Integer id, String username, String password, String fullName, String email,
+              Set<Role> roles, boolean enabled) {
     this.id = id;
     this.username = username;
     this.password = password;
     this.fullName = fullName;
     this.email = email;
+    this.enabled = enabled;
+    this.roles = roles;
+  }
+
+  public User(Integer id, String username, String password, String fullName, String email, Set<Role> roles) {
+    this(id, username, password, fullName, email, roles, true);
+  }
+
+  public User(String username, String password, String fullName, String email, Set<Role> roles) {
+    this(null, username, password, fullName, email, roles, true);
+  }
+
+  public User(Integer id, String username, String password, String fullName, String email) {
+    this(id, username, password, fullName, email, null, true);
   }
 
   public User(String username, String password, String fullName, String email) {

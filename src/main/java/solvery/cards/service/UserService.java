@@ -19,19 +19,16 @@ public class UserService implements UserDetailsService {
   private final MessageSourceAccessor messageSourceAccessor;
 
   public UserService(UserRepository repository,
-      PasswordEncoder passwordEncoder,
-      MessageSourceAccessor messageSourceAccessor) {
+                     PasswordEncoder passwordEncoder,
+                     MessageSourceAccessor messageSourceAccessor) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
     this.messageSourceAccessor = messageSourceAccessor;
   }
 
-  public User getByUsername(String username) {
-    return repository.findByUsername(username);
-  }
-
   public User create(User user) {
     user.setPassword(passwordEncoder.encode(user.getPassword()));
+    user.setEnabled(true);
     return repository.save(user);
   }
 

@@ -28,40 +28,35 @@ class UserServiceIntegrationTest {
 
   @Test
   void create() {
-    User newUser = new User("u3", "psw", "user3", "user3@b.ru");
-    newUser.setRoles(Collections.singleton(Role.USER));
-    newUser.setEnabled(true);
+    User newUser =
+        new User("u3", "psw", "user3", "user3@b.ru", Collections.singleton(Role.USER));
 
     User created = service.create(newUser);
     newUser.setId(created.getId());
 
     assertThat(newUser).usingRecursiveComparison().ignoringFields("password").isEqualTo(created);
-    assertEquals(service.getByUsername(newUser.getUsername()), newUser);
+    assertEquals(service.loadUserByUsername(newUser.getUsername()), newUser);
   }
 
   @Test
   void create_duplicateUsername() {
-    User newUser = new User("u1", "psw", "user3", "user3@b.ru");
-    newUser.setRoles(Collections.singleton(Role.USER));
-    newUser.setEnabled(true);
+    User newUser =
+        new User("u1", "psw", "user3", "user3@b.ru", Collections.singleton(Role.USER));
 
     assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
   }
 
   @Test
   void create_duplicateEmail() {
-    User newUser = new User("u3", "psw", "user3", "a@b.ru");
-    newUser.setRoles(Collections.singleton(Role.USER));
-    newUser.setEnabled(true);
+    User newUser = new User("u3", "psw", "user3", "a@b.ru", Collections.singleton(Role.USER));
 
     assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
   }
 
   @Test
   void loadUserByUsername() {
-    User exceptedUser = new User(1, "u1", "psw", "user1", "a@b.ru");
-    exceptedUser.setRoles(Collections.singleton(Role.USER));
-    exceptedUser.setEnabled(true);
+    User exceptedUser =
+        new User(1, "u1", "psw", "user1", "a@b.ru", Collections.singleton(Role.USER), true);
 
     UserDetails actualUser = service.loadUserByUsername("u1");
 

@@ -52,9 +52,8 @@ public class UserController {
         userRegistrationTo.getUsername(),
         userRegistrationTo.getPassword(),
         userRegistrationTo.getFullName(),
-        userRegistrationTo.getEmail());
-    user.setRoles(Collections.singleton(Role.USER));
-    user.setEnabled(true);
+        userRegistrationTo.getEmail(),
+        Collections.singleton(Role.USER));
 
     service.create(user);
     return "redirect:/login";
