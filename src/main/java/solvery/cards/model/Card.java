@@ -40,11 +40,16 @@ public class Card {
   public Card() {
   }
 
-  public Card(Integer id, User user, String numb, Integer balance) {
+  public Card(Integer id, User user, String numb, Integer balance, boolean enabled) {
     this.id = id;
     this.user = user;
     this.numb = numb;
     this.balance = balance;
+    this.enabled = enabled;
+  }
+
+  public Card(Integer id, User user, String numb, Integer balance) {
+    this(id, user, numb, balance, true);
   }
 
   public Card(User user, String numb, Integer balance) {
