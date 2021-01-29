@@ -5,6 +5,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import solvery.cards.validator.FieldsValueMatch;
 
+import java.util.Objects;
+
 @FieldsValueMatch.List({
     @FieldsValueMatch(
         field = "confirmPassword",
@@ -100,5 +102,35 @@ public class UserRegistrationTo {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    UserRegistrationTo that = (UserRegistrationTo) o;
+    return Objects.equals(id, that.id) &&
+        Objects.equals(username, that.username) &&
+        Objects.equals(password, that.password) &&
+        Objects.equals(confirmPassword, that.confirmPassword) &&
+        Objects.equals(fullName, that.fullName) &&
+        Objects.equals(email, that.email);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, username, password, confirmPassword, fullName, email);
+  }
+
+  @Override
+  public String toString() {
+    return "UserRegistrationTo{" +
+        "id=" + id +
+        ", username='" + username + '\'' +
+        ", password='" + password + '\'' +
+        ", confirmPassword='" + confirmPassword + '\'' +
+        ", fullName='" + fullName + '\'' +
+        ", email='" + email + '\'' +
+        '}';
   }
 }
