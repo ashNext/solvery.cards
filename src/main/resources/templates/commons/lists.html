@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <body>
-<div th:fragment="cardList">
+<div th:fragment="cardList" id="card-list">
   <table>
     <thead>
-    <tr>
+    <tr id="card-list-head">
       <th th:text="#{card.numb}">Card number</th>
       <th th:text="#{card.balance}">Balance</th>
       <th th:text="#{misc.actions}">Actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="card : ${cards}">
+    <tr th:each="card : ${cards}" th:id="'card-list-'+${card.id}">
       <td th:text="${card.numb}"></td>
       <td th:text="${#numbers.formatDecimal(card.balance / 100d, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
       <td>

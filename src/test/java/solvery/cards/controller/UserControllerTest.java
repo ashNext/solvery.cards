@@ -56,9 +56,9 @@ class UserControllerTest {
   void create() throws Exception {
     mockMvc.perform(post("/registration")
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("username", "u3")
-        .param("fullName", "user3")
-        .param("email", "user3@b.ru")
+        .param("username", "u0")
+        .param("fullName", "user0")
+        .param("email", "user0@b.ru")
         .param("password", "1")
         .param("confirmPassword", "1")
         .with(csrf())

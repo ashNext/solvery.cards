@@ -29,7 +29,7 @@ public class CardController {
   public String getAllEnabled(@AuthenticationPrincipal User user, Model model) {
     model.addAttribute("cards", service.getAllEnabledByUser(user));
     model.addAttribute("cardTo", new CardTo());
-    return "/card";
+    return "card";
   }
 
   @PostMapping
