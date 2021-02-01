@@ -19,6 +19,7 @@ public class ErrorExceptionHandler {
   public static final String EXCEPTION_DUPLICATE_CARD = "card.uniqueCardNumber";
   public static final String EXCEPTION_DUPLICATE_USERNAME = "user.userNameExist";
   public static final String EXCEPTION_DUPLICATE_EMAIL = "user.emailExist";
+  public static final String EXCEPTION_NO_MATCH_RETYPE_PASSWORD = "user.matchRetypePassword";
 
   private static final Map<String, String> MAP_DUPLICATE_EXCEPTION = Map.of(
       "cards_unique_numb_idx", EXCEPTION_DUPLICATE_CARD,

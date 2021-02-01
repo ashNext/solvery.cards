@@ -1,80 +1,49 @@
 package solvery.cards.controller;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MvcResult;
+import solvery.cards.dto.CardTo;
+import solvery.cards.model.Card;
+import solvery.cards.service.CardService;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.EXCEPTION_DUPLICATE_CARD;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
-import solvery.cards.dto.CardTo;
-import solvery.cards.model.Card;
-import solvery.cards.model.Role;
-import solvery.cards.model.User;
-import solvery.cards.service.CardService;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("/application-test.properties")
 //@WithMockUser(authorities = "u1")
+@WithUserDetails(value = "u1")
 @Sql(
     value = {"/create-users-before.sql", "/create-cards-before.sql"},
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(
     value = {"/create-cards-after.sql", "/create-users-after.sql"},
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-class CardControllerTest {
-
-  private static final Locale RU_LOCALE = new Locale("ru");
-
-  private static final User user =
-      new User(1, "u1", "@@", "user1", "user1@a.ru", Collections.singleton(Role.USER), true);
+class CardControllerTest extends AbstractControllerTest {
 
   private static final List<Card> cards = List.of(
-      new Card(1, user, "11", 0, true),
-      new Card(2, user, "12", 0, true),
-      new Card(3, user, "13", 0, true)
+      new Card(1, user1, "11", 0, true),
+      new Card(2, user1, "12", 0, true),
+      new Card(3, user1, "13", 0, true)
   );
-
-  @Autowired
-  private MockMvc mockMvc;
 
   @Autowired
   private CardService service;
 
-  @Autowired
-  private MessageSourceAccessor messageSourceAccessor;
-
   @Test
-  @WithUserDetails(value = "u1")
-  @Transactional
   @SuppressWarnings(value = "unchecked")
   void getAllEnabled() throws Exception {
     MvcResult result = mockMvc.perform(get("/card")
@@ -118,10 +87,8 @@ class CardControllerTest {
   }
 
   @Test
-  @WithUserDetails(value = "u1")
-  @Transactional
   void create() throws Exception {
-    Card exceptedCard = new Card(9, user, "100", 0, true);
+    Card exceptedCard = new Card(9, user1, "100", 0, true);
     mockMvc.perform(post("/card")
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("numb", "100")
@@ -139,8 +106,6 @@ class CardControllerTest {
   }
 
   @Test
-  @WithUserDetails(value = "u1")
-  @Transactional
   void create_validationDuplicate() throws Exception {
     mockMvc.perform(post("/card")
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -156,8 +121,6 @@ class CardControllerTest {
   }
 
   @Test
-  @WithUserDetails(value = "u1")
-  @Transactional
   void close() throws Exception {
     mockMvc.perform(post("/card/close/2")
         .with(csrf())
@@ -172,12 +135,8 @@ class CardControllerTest {
         .filter(card -> card.getId() != 2)
         .collect(Collectors.toList());
 
-    assertThat(service.getAllEnabledByUser(user)).usingRecursiveComparison()
+    assertThat(service.getAllEnabledByUser(user1)).usingRecursiveComparison()
         .ignoringFields("user.password")
         .isEqualTo(enabledCards);
-  }
-
-  private String getMessage(String code) {
-    return messageSourceAccessor.getMessage(code, RU_LOCALE);
   }
 }

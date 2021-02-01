@@ -7,11 +7,13 @@ import solvery.cards.validator.FieldsValueMatch;
 
 import java.util.Objects;
 
+import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.EXCEPTION_NO_MATCH_RETYPE_PASSWORD;
+
 @FieldsValueMatch.List({
     @FieldsValueMatch(
         field = "confirmPassword",
         fieldMatch = "password",
-        message = "{user.matchRetypePassword}"
+        message = "{"+EXCEPTION_NO_MATCH_RETYPE_PASSWORD+"}"
     )
 })
 public class UserRegistrationTo {
