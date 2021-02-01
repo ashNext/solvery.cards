@@ -18,6 +18,7 @@ import java.util.List;
 import static solvery.cards.util.specification.OperationSpecification.*;
 
 @Service
+@Transactional(readOnly = true)
 public class OperationService {
 
   private final OperationRepository repository;
@@ -29,6 +30,7 @@ public class OperationService {
     this.cardService = cardService;
   }
 
+  @Transactional
   public Operation create(Operation operation) {
     checkAbilityChangeAndApplyBalance(operation);
     return repository.save(operation);
@@ -42,10 +44,12 @@ public class OperationService {
     create(new Operation(card, recipientCardNumb, sum, LocalDateTime.now()));
   }
 
+  @Transactional
   public void addMoney(Integer cardId, Integer sum) {
     moveMoneyByCardId(cardId, null, sum);
   }
 
+  @Transactional
   public void withdrawMoney(Integer cardId, Integer sum) {
     moveMoneyByCardId(cardId, null, -sum);
   }

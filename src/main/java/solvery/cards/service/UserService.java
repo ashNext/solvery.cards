@@ -6,10 +6,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import solvery.cards.model.User;
 import solvery.cards.repository.UserRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
 
   private final UserRepository repository;
@@ -26,6 +29,7 @@ public class UserService implements UserDetailsService {
     this.messageSourceAccessor = messageSourceAccessor;
   }
 
+  @Transactional
   public User create(User user) {
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     user.setEnabled(true);
