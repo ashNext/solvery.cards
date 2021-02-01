@@ -26,8 +26,8 @@ class CardServiceTest {
   @InjectMocks
   private CardService service;
 
-  private final User user = new User(1, "u1", "@@", "user1", "a@b.ru");
-  private final Card exceptedCard = new Card(1, user, "11", 0);
+  private final static User user = new User(1, "u1", "@@", "user1", "a@b.ru");
+  private final static Card exceptedCard = new Card(1, user, "11", 0, true);
 
   @Test
   void getAllEnabledByUser() {
@@ -45,7 +45,6 @@ class CardServiceTest {
 
   @Test
   void create() {
-    exceptedCard.setEnabled(true);
     when(repository.save(exceptedCard)).thenReturn(exceptedCard);
 
     Card actualCard = service.create(new Card(1, user, "11", null));
@@ -63,7 +62,18 @@ class CardServiceTest {
   }
 
   @Test
-  void update() {
+  void close() {
+    when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.of(exceptedCard));
+    Card disabledCard = exceptedCard;
+    disabledCard.setEnabled(false);
+    when(repository.save(disabledCard)).thenReturn(disabledCard);
+
+    Card actualCard = service.close(1);
+
+    assertEquals(disabledCard, actualCard);
+    verify(repository, times(1)).findByIdAndEnabledTrue(1);
+    verify(repository, times(1)).save(disabledCard);
+    verifyNoMoreInteractions(repository);
   }
 
   @Test

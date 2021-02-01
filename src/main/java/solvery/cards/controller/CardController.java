@@ -47,11 +47,9 @@ public class CardController {
     return "redirect:/card";
   }
 
-  @PostMapping("/close/{id}")
+  @PostMapping("/{id}/close")
   public String close(@PathVariable Integer id) {
-    Card card = service.getEnabledById(id);
-    card.setEnabled(false);
-    service.update(card);
+    service.close(id);
     return "redirect:/card";
   }
 }

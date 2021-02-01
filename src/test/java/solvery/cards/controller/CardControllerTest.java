@@ -122,7 +122,7 @@ class CardControllerTest extends AbstractControllerTest {
 
   @Test
   void close() throws Exception {
-    mockMvc.perform(post("/card/close/2")
+    mockMvc.perform(post("/card/2/close")
         .with(csrf())
     )
         .andDo(print())

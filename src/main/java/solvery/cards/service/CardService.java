@@ -40,4 +40,11 @@ public class CardService {
     return repository.findByNumbAndEnabledTrue(cardNumb)
         .orElseThrow(() -> new NotFoundException("Card \"" + cardNumb + "\" is not found!"));
   }
+
+  public Card close(Integer id){
+    Card card = getEnabledById(id);
+    card.setEnabled(false);
+    update(card);
+    return card;
+  }
 }
