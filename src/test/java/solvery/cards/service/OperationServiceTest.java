@@ -1,10 +1,23 @@
 package solvery.cards.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import solvery.cards.model.Card;
@@ -12,14 +25,6 @@ import solvery.cards.model.Operation;
 import solvery.cards.model.User;
 import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.exception.BalanceOutRangeException;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OperationServiceTest {
@@ -29,6 +34,9 @@ class OperationServiceTest {
 
   @Mock
   private CardService cardService;
+
+  @Mock
+  private MessageSourceAccessor messageSourceAccessor;
 
   @InjectMocks
   private OperationService service;
@@ -82,10 +90,14 @@ class OperationServiceTest {
     Card actualCard = new Card(1, user, "11", 2000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
+    when(messageSourceAccessor.getMessage(
+        eq("operation.over.balance"),
+        eq(new Object[]{"11"}))
+    ).thenReturn("1");
 
     assertThrows(
         BalanceOutRangeException.class,
-        () -> service.addMoney(actualCard.getId(), 999999900));
+        () -> service.addMoney(actualCard.getId(), 999999900), "42");
     verify(repository, times(0)).save(any());
     verifyNoMoreInteractions(repository);
   }
@@ -110,10 +122,14 @@ class OperationServiceTest {
     Card actualCard = new Card(1, user, "11", 5000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
+    when(messageSourceAccessor.getMessage(
+        eq("operation.lower.balance"),
+        eq(new Object[]{"11"}))
+    ).thenReturn("1");
 
     assertThrows(
         BalanceOutRangeException.class,
-        () -> service.withdrawMoney(actualCard.getId(), 999999900));
+        () -> service.withdrawMoney(actualCard.getId(), 999999900), "42");
 
     verify(repository, times(0)).save(any());
     verifyNoMoreInteractions(repository);
