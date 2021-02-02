@@ -1,6 +1,7 @@
 package solvery.cards.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -60,6 +61,10 @@ public class Operation {
     this(null, card, recipientCardNumb, sum, cardBalance, dateTime);
   }
 
+  public Operation(Long id, Card card, String recipientCardNumb, Integer sum, LocalDateTime dateTime) {
+    this(id, card, recipientCardNumb, sum, null, dateTime);
+  }
+
   public Operation(Card card, String recipientCardNumb, Integer sum, LocalDateTime dateTime) {
     this(null, card, recipientCardNumb, sum, null, dateTime);
   }
@@ -114,5 +119,35 @@ public class Operation {
 
   public void setDateTime(LocalDateTime dateTime) {
     this.dateTime = dateTime;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Operation operation = (Operation) o;
+    return Objects.equals(id, operation.id) &&
+        Objects.equals(card, operation.card) &&
+        Objects.equals(recipientCardNumb, operation.recipientCardNumb) &&
+        Objects.equals(sum, operation.sum) &&
+        Objects.equals(cardBalance, operation.cardBalance) &&
+        Objects.equals(dateTime, operation.dateTime);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, card, recipientCardNumb, sum, cardBalance, dateTime);
+  }
+
+  @Override
+  public String toString() {
+    return "Operation{" +
+        "id=" + id +
+        ", card=" + card +
+        ", recipientCardNumb='" + recipientCardNumb + '\'' +
+        ", sum=" + sum +
+        ", cardBalance=" + cardBalance +
+        ", dateTime=" + dateTime +
+        '}';
   }
 }

@@ -36,22 +36,22 @@ public class OperationService {
     return repository.save(operation);
   }
 
-  private void moveMoneyByCardId(Integer cardId, String recipientCardNumb, Integer sum) {
-    moveMoney(cardService.getEnabledById(cardId), recipientCardNumb, sum);
+  private Operation moveMoneyByCardId(Integer cardId, String recipientCardNumb, Integer sum) {
+    return moveMoney(cardService.getEnabledById(cardId), recipientCardNumb, sum);
   }
 
-  private void moveMoney(Card card, String recipientCardNumb, Integer sum) {
-    create(new Operation(card, recipientCardNumb, sum, LocalDateTime.now()));
-  }
-
-  @Transactional
-  public void addMoney(Integer cardId, Integer sum) {
-    moveMoneyByCardId(cardId, null, sum);
+  private Operation moveMoney(Card card, String recipientCardNumb, Integer sum) {
+    return create(new Operation(card, recipientCardNumb, sum, LocalDateTime.now()));
   }
 
   @Transactional
-  public void withdrawMoney(Integer cardId, Integer sum) {
-    moveMoneyByCardId(cardId, null, -sum);
+  public Operation addMoney(Integer cardId, Integer sum) {
+    return moveMoneyByCardId(cardId, null, sum);
+  }
+
+  @Transactional
+  public Operation withdrawMoney(Integer cardId, Integer sum) {
+    return moveMoneyByCardId(cardId, null, -sum);
   }
 
   @Transactional
