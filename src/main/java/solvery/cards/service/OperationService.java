@@ -1,5 +1,6 @@
 package solvery.cards.service;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class OperationService {
   }
 
   @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
   public Operation create(Operation operation) {
     checkAbilityChangeAndApplyBalance(operation);
     return repository.save(operation);

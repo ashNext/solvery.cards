@@ -1,5 +1,7 @@
 package solvery.cards.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solvery.cards.model.Card;
@@ -19,11 +21,13 @@ public class CardService {
     this.repository = repository;
   }
 
+  @Cacheable(value = "cards")
   public List<Card> getAllEnabledByUser(User user) {
     return repository.getAllByUser(user, true);
   }
 
   @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
   public Card create(Card card) {
     card.setBalance(0);
     card.setEnabled(true);
@@ -31,6 +35,7 @@ public class CardService {
   }
 
   @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
   public void update(Card card) {
     repository.save(card);
   }
@@ -46,7 +51,8 @@ public class CardService {
   }
 
   @Transactional
-  public Card close(Integer id){
+  @CacheEvict(value = "cards", allEntries = true)
+  public Card close(Integer id) {
     Card card = getEnabledById(id);
     card.setEnabled(false);
     update(card);
