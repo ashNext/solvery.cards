@@ -1,6 +1,17 @@
 package solvery.cards.service;
 
 import org.springframework.cache.annotation.CacheEvict;
+import static solvery.cards.util.specification.OperationSpecification.fromDate;
+import static solvery.cards.util.specification.OperationSpecification.toDate;
+import static solvery.cards.util.specification.OperationSpecification.withCard;
+import static solvery.cards.util.specification.OperationSpecification.withDirection;
+import static solvery.cards.util.specification.OperationSpecification.withRecipient;
+import static solvery.cards.util.specification.OperationSpecification.withType;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -12,12 +23,6 @@ import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.CardUtil;
 import solvery.cards.util.exception.BalanceOutRangeException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static solvery.cards.util.specification.OperationSpecification.*;
-
 @Service
 @Transactional(readOnly = true)
 public class OperationService {
@@ -26,9 +31,14 @@ public class OperationService {
 
   private final CardService cardService;
 
-  public OperationService(OperationRepository repository, CardService cardService) {
+  private final MessageSourceAccessor messageSourceAccessor;
+
+  public OperationService(OperationRepository repository,
+      CardService cardService,
+      MessageSourceAccessor messageSourceAccessor) {
     this.repository = repository;
     this.cardService = cardService;
+    this.messageSourceAccessor = messageSourceAccessor;
   }
 
   @Transactional
@@ -64,10 +74,12 @@ public class OperationService {
     moveMoney(recipientCard, card.getNumb(), sum);
   }
 
-  public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId, int typeId, LocalDate startDate, LocalDate endDate) {
+  public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId,
+      int typeId, LocalDate startDate, LocalDate endDate) {
     Card card = cardService.getEnabledById(cardId);
 
-    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null && directionId == 0 && typeId == 0) {
+    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
+        && directionId == 0 && typeId == 0) {
       startDate = LocalDate.now().minusDays(2);
       endDate = LocalDate.now();
     }
@@ -90,13 +102,15 @@ public class OperationService {
     int newBalance = operation.getCard().getBalance() + operation.getSum();
 
     if (newBalance > CardUtil.MAX_BALANCE) {
-      throw new BalanceOutRangeException("Невозможно зачислить средства на карту \""
-          + operation.getCard().getNumb() + "\", т.к. будет первышен лимит баланса");
+      throw new BalanceOutRangeException(
+          messageSourceAccessor
+              .getMessage("operation.over.balance", new Object[]{operation.getCard().getNumb()}));
     }
 
     if (newBalance < CardUtil.MIN_BALANCE) {
-      throw new BalanceOutRangeException("На карте \""
-          + operation.getCard().getNumb() + "\" не хватает средств для совершения операции");
+      throw new BalanceOutRangeException(
+          messageSourceAccessor
+              .getMessage("operation.lower.balance", new Object[]{operation.getCard().getNumb()}));
     }
 
     operation.getCard().setBalance(newBalance);
