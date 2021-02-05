@@ -1,16 +1,6 @@
 package solvery.cards.service;
 
 import org.springframework.cache.annotation.CacheEvict;
-import static solvery.cards.util.specification.OperationSpecification.fromDate;
-import static solvery.cards.util.specification.OperationSpecification.toDate;
-import static solvery.cards.util.specification.OperationSpecification.withCard;
-import static solvery.cards.util.specification.OperationSpecification.withDirection;
-import static solvery.cards.util.specification.OperationSpecification.withRecipient;
-import static solvery.cards.util.specification.OperationSpecification.withType;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,6 +13,12 @@ import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.CardUtil;
 import solvery.cards.util.exception.BalanceOutRangeException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static solvery.cards.util.specification.OperationSpecification.*;
+
 @Service
 @Transactional(readOnly = true)
 public class OperationService {
@@ -34,8 +30,8 @@ public class OperationService {
   private final MessageSourceAccessor messageSourceAccessor;
 
   public OperationService(OperationRepository repository,
-      CardService cardService,
-      MessageSourceAccessor messageSourceAccessor) {
+                          CardService cardService,
+                          MessageSourceAccessor messageSourceAccessor) {
     this.repository = repository;
     this.cardService = cardService;
     this.messageSourceAccessor = messageSourceAccessor;
@@ -57,16 +53,19 @@ public class OperationService {
   }
 
   @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
   public Operation addMoney(Integer cardId, Integer sum) {
     return moveMoneyByCardId(cardId, null, sum);
   }
 
   @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
   public Operation withdrawMoney(Integer cardId, Integer sum) {
     return moveMoneyByCardId(cardId, null, -sum);
   }
 
   @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
   public void transferMoney(Integer cardId, String recipientCardNumb, Integer sum) {
     Card card = cardService.getEnabledById(cardId);
     Card recipientCard = cardService.getEnabledByCardNumb(recipientCardNumb);
@@ -75,7 +74,7 @@ public class OperationService {
   }
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId,
-      int typeId, LocalDate startDate, LocalDate endDate) {
+                                     int typeId, LocalDate startDate, LocalDate endDate) {
     Card card = cardService.getEnabledById(cardId);
 
     if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
