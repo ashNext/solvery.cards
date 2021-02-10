@@ -1,5 +1,6 @@
 package solvery.cards.controller;
 
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import java.util.Locale;
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @Transactional
+@Tag("integration")
 public abstract class AbstractControllerTest {
   private static final Locale RU_LOCALE = new Locale("ru");
 

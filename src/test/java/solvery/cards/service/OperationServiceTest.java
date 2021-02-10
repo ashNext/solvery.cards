@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +29,7 @@ import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.exception.BalanceOutRangeException;
 
 @ExtendWith(MockitoExtension.class)
+@Tag("fast")
 class OperationServiceTest {
 
   @Mock
