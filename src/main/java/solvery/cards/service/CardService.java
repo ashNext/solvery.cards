@@ -2,6 +2,7 @@ package solvery.cards.service;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solvery.cards.model.Card;
@@ -17,8 +18,11 @@ public class CardService {
 
   private final CardRepository repository;
 
-  public CardService(CardRepository repository) {
+  private final MessageSourceAccessor messageSourceAccessor;
+
+  public CardService(CardRepository repository, MessageSourceAccessor messageSourceAccessor) {
     this.repository = repository;
+    this.messageSourceAccessor = messageSourceAccessor;
   }
 
   @Cacheable(value = "cards")
@@ -42,12 +46,14 @@ public class CardService {
 
   public Card getEnabledById(Integer id) {
     return repository.findByIdAndEnabledTrue(id)
-        .orElseThrow(() -> new NotFoundException("Card is not found!"));
+        .orElseThrow(() -> new NotFoundException(
+            messageSourceAccessor.getMessage("card.cardByIdNotFound")));
   }
 
   public Card getEnabledByCardNumb(String cardNumb) {
     return repository.findByNumbAndEnabledTrue(cardNumb)
-        .orElseThrow(() -> new NotFoundException("Card \"" + cardNumb + "\" is not found!"));
+        .orElseThrow(() -> new NotFoundException(
+            messageSourceAccessor.getMessage("card.numbNotFound", new Object[]{cardNumb})));
   }
 
   @Transactional

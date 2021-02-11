@@ -1,36 +1,27 @@
-package solvery.cards.service;
+package solvery.cards.service.unit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import solvery.cards.model.Card;
+import solvery.cards.model.Operation;
+import solvery.cards.repository.OperationRepository;
+import solvery.cards.service.CardService;
+import solvery.cards.service.OperationService;
+import solvery.cards.service.OperationServiceInterfaceTest;
+import solvery.cards.util.exception.BalanceOutRangeException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import solvery.cards.model.Card;
-import solvery.cards.model.Operation;
-import solvery.cards.model.User;
-import solvery.cards.repository.OperationRepository;
-import solvery.cards.util.exception.BalanceOutRangeException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-@Tag("fast")
-class OperationServiceTest {
+class OperationServiceUnitTest extends AbstractServiceUnitTest implements OperationServiceInterfaceTest {
 
   @Mock
   private OperationRepository repository;
@@ -38,16 +29,11 @@ class OperationServiceTest {
   @Mock
   private CardService cardService;
 
-  @Mock
-  private MessageSourceAccessor messageSourceAccessor;
-
   @InjectMocks
   private OperationService service;
 
-  private final static User user = new User(1, "u1", "@@", "user1", "a@b.ru");
-
-  private final static Card exceptedCard1 = new Card(1, user, "11", 3000, true);
-  private final static Card exceptedCard2 = new Card(2, user, "12", 6000, true);
+  private final static Card exceptedCard1 = new Card(1, exceptedUser, "11", 3000, true);
+  private final static Card exceptedCard2 = new Card(2, exceptedUser, "12", 6000, true);
 
   private final static LocalDateTime exceptedNow = LocalDateTime.of(2021, 1, 2, 11, 0);
   private final static Operation exceptedOperation =
@@ -55,8 +41,9 @@ class OperationServiceTest {
 
 
   @Test
-  void create() {
-    Card actualCard = new Card(1, user, "11", 2000, true);
+  @Override
+  public void create() {
+    Card actualCard = new Card(1, exceptedUser, "11", 2000, true);
     when(
         repository.save(new Operation(1L, actualCard, "", 1000, any()))
     )
@@ -74,8 +61,9 @@ class OperationServiceTest {
   }
 
   @Test
-  void addMoney() {
-    Card actualCard = new Card(1, user, "11", 2000, true);
+  @Override
+  public void addMoney() {
+    Card actualCard = new Card(1, exceptedUser, "11", 2000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
     when(repository.save(new Operation(actualCard, 1000, any()))).thenReturn(exceptedOperation);
@@ -89,25 +77,28 @@ class OperationServiceTest {
   }
 
   @Test
-  void addMoney_overBalance() {
-    Card actualCard = new Card(1, user, "11", 2000, true);
+  @Override
+  public void addMoneyShouldReturnBalanceOutRangeOnOverBalance() {
+    Card actualCard = new Card(1, exceptedUser, "11", 2000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
     when(messageSourceAccessor.getMessage(
         eq("operation.over.balance"),
         eq(new Object[]{"11"}))
-    ).thenReturn("1");
+    ).thenReturn("42");
 
-    assertThrows(
+    BalanceOutRangeException exception = assertThrows(
         BalanceOutRangeException.class,
         () -> service.addMoney(actualCard.getId(), 999999900), "42");
+    assertEquals("42", exception.getMessage());
     verify(repository, times(0)).save(any());
     verifyNoMoreInteractions(repository);
   }
 
   @Test
-  void withdrawMoney() {
-    Card actualCard = new Card(1, user, "11", 5000, true);
+  @Override
+  public void withdrawMoney() {
+    Card actualCard = new Card(1, exceptedUser, "11", 5000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
     when(repository.save(new Operation(actualCard, 2000, any()))).thenReturn(exceptedOperation);
@@ -121,27 +112,30 @@ class OperationServiceTest {
   }
 
   @Test
-  void withdrawMoney_lowerBalance() {
-    Card actualCard = new Card(1, user, "11", 5000, true);
+  @Override
+  public void withdrawMoneyShouldReturnBalanceOutRangeOnLowerBalance() {
+    Card actualCard = new Card(1, exceptedUser, "11", 5000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
     when(messageSourceAccessor.getMessage(
         eq("operation.lower.balance"),
         eq(new Object[]{"11"}))
-    ).thenReturn("1");
+    ).thenReturn("42");
 
-    assertThrows(
+    BalanceOutRangeException exception = assertThrows(
         BalanceOutRangeException.class,
-        () -> service.withdrawMoney(actualCard.getId(), 999999900), "42");
+        () -> service.withdrawMoney(actualCard.getId(), 999999900));
 
+    assertEquals("42", exception.getMessage());
     verify(repository, times(0)).save(any());
     verifyNoMoreInteractions(repository);
   }
 
   @Test
-  void transferMoney() {
-    Card card = new Card(1, user, "11", 4000, true);
-    Card recipientCard = new Card(2, user, "12", 5000, true);
+  @Override
+  public void transferMoney() {
+    Card card = new Card(1, exceptedUser, "11", 4000, true);
+    Card recipientCard = new Card(2, exceptedUser, "12", 5000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(card);
     when(cardService.getEnabledByCardNumb(eq("12"))).thenReturn(recipientCard);
@@ -154,8 +148,9 @@ class OperationServiceTest {
   }
 
   @Test
-  void getByFilter() {
-    Card card = new Card(1, user, "11", 7000, true);
+  @Override
+  public void getByFilter() {
+    Card card = new Card(1, exceptedUser, "11", 7000, true);
     List<Operation> operations = new ArrayList<>(List.of(
         new Operation(1L, card, null, 10000, 10000,
             LocalDateTime.of(2021, 1, 2, 11, 0)),
@@ -179,13 +174,6 @@ class OperationServiceTest {
     when(cardService.getEnabledById(eq(1))).thenReturn(card);
     when(repository.findAll(
         any(Specification.class),
-//        eq(
-//        Specification.where(withCard(card))
-//            .and(withRecipient(""))
-//            .and(withDirection(0))
-//            .and(withType(0))
-//            .and(fromDate(null))
-//            .and(toDate(null))),
         eq(Sort.by(Sort.Direction.DESC, "dateTime")))
     ).thenReturn(operations);
 

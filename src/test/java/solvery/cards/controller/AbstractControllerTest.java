@@ -20,6 +20,7 @@ import java.util.Locale;
 @Transactional
 @Tag("integration")
 public abstract class AbstractControllerTest {
+
   private static final Locale RU_LOCALE = new Locale("ru");
 
   protected static final User user1 =

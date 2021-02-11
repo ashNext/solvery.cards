@@ -1,15 +1,13 @@
-package solvery.cards.service;
+package solvery.cards.service.unit;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import solvery.cards.model.Card;
-import solvery.cards.model.User;
 import solvery.cards.repository.CardRepository;
+import solvery.cards.service.CardService;
+import solvery.cards.service.CardServiceInterfaceTest;
 import solvery.cards.util.exception.NotFoundException;
 
 import java.util.List;
@@ -18,9 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-@Tag("fast")
-class CardServiceTest {
+class CardServiceUnitTest extends AbstractServiceUnitTest implements CardServiceInterfaceTest {
 
   @Mock
   private CardRepository repository;
@@ -28,28 +24,27 @@ class CardServiceTest {
   @InjectMocks
   private CardService service;
 
-  private final static User user = new User(1, "u1", "@@", "user1", "a@b.ru");
-  private final static Card exceptedCard = new Card(1, user, "11", 0, true);
-
   @Test
-  void getAllEnabledByUser() {
+  @Override
+  public void getAllEnabledByUser() {
     List<Card> exceptedCards = List.of(
-        new Card(1, user, "11", 0),
-        new Card(2, user, "12", 1000)
+        new Card(1, exceptedUser, "11", 0),
+        new Card(2, exceptedUser, "12", 1000)
     );
-    when(repository.getAllByUser(user, true)).thenReturn(exceptedCards);
-    List<Card> actualCards = service.getAllEnabledByUser(user);
+    when(repository.getAllByUser(exceptedUser, true)).thenReturn(exceptedCards);
+    List<Card> actualCards = service.getAllEnabledByUser(exceptedUser);
     assertIterableEquals(exceptedCards, actualCards);
 
-    verify(repository).getAllByUser(user, true);
+    verify(repository).getAllByUser(exceptedUser, true);
     verifyNoMoreInteractions(repository);
   }
 
   @Test
-  void create() {
+  @Override
+  public void create() {
     when(repository.save(exceptedCard)).thenReturn(exceptedCard);
 
-    Card actualCard = service.create(new Card(1, user, "11", null));
+    Card actualCard = service.create(new Card(1, exceptedUser, "11", null));
 
     assertEquals(exceptedCard, actualCard);
     verify(repository).save(exceptedCard);
@@ -57,14 +52,18 @@ class CardServiceTest {
   }
 
   @Test
-  void create_duplicateNumber() {
-    when(repository.save(exceptedCard)).thenThrow(new DataIntegrityViolationException(""));
+  @Override
+  public void createShouldReturnDuplicateNumber() {
+    when(repository.save(exceptedCard)).thenThrow(new DataIntegrityViolationException("42"));
 
-    assertThrows(DataIntegrityViolationException.class, () -> service.create(exceptedCard));
+    DataIntegrityViolationException exception =
+        assertThrows(DataIntegrityViolationException.class, () -> service.create(exceptedCard));
+    assertEquals("42", exception.getMessage());
   }
 
   @Test
-  void close() {
+  @Override
+  public void close() {
     when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.of(exceptedCard));
     Card disabledCard = exceptedCard;
     disabledCard.setEnabled(false);
@@ -79,7 +78,8 @@ class CardServiceTest {
   }
 
   @Test
-  void getEnabledById() {
+  @Override
+  public void getEnabledById() {
     when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.of(exceptedCard));
 
     Card actualCard = service.getEnabledById(1);
@@ -89,14 +89,19 @@ class CardServiceTest {
   }
 
   @Test
-  void getEnabledById_notFound() {
+  @Override
+  public void getEnabledByIdShouldReturnNotFound() {
     when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.empty());
+    when(messageSourceAccessor.getMessage(eq("card.cardByIdNotFound"))).thenReturn("42");
 
-    assertThrows(NotFoundException.class, () -> service.getEnabledById(1));
+    NotFoundException exception =
+        assertThrows(NotFoundException.class, () -> service.getEnabledById(1));
+    assertEquals("42", exception.getMessage());
   }
 
   @Test
-  void getEnabledByCardNumb() {
+  @Override
+  public void getEnabledByCardNumb() {
     when(repository.findByNumbAndEnabledTrue("11")).thenReturn(Optional.of(exceptedCard));
 
     Card actualCard = service.getEnabledByCardNumb("11");
@@ -106,9 +111,16 @@ class CardServiceTest {
   }
 
   @Test
-  void getEnabledByCardNumb_notFound() {
+  @Override
+  public void getEnabledByCardNumbShouldReturnNotFound() {
     when(repository.findByNumbAndEnabledTrue("11")).thenReturn(Optional.empty());
+    when(messageSourceAccessor.getMessage(
+        eq("card.numbNotFound"),
+        eq(new Object[]{"11"}))
+    ).thenReturn("42");
 
-    assertThrows(NotFoundException.class, () -> service.getEnabledByCardNumb("11"));
+    NotFoundException exception =
+        assertThrows(NotFoundException.class, () -> service.getEnabledByCardNumb("11"));
+    assertEquals("42", exception.getMessage());
   }
 }

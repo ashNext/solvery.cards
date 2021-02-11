@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.*;
 
-//@WebMvcTest
 @Sql(value = {"/create-users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/create-users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class UserControllerTest extends AbstractControllerTest {
@@ -47,7 +46,7 @@ class UserControllerTest extends AbstractControllerTest {
   }
 
   @Test
-  void create_validateDuplicateAndNoMatchRetypePassword() throws Exception {
+  void validateOnCreateDuplicateAndNoMatchRetypePassword() throws Exception {
     mockMvc.perform(post("/registration")
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("username", "u1")

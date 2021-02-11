@@ -1,11 +1,8 @@
-package solvery.cards.service;
+package solvery.cards.service.unit;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,17 +10,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import solvery.cards.model.Role;
 import solvery.cards.model.User;
 import solvery.cards.repository.UserRepository;
+import solvery.cards.service.UserService;
+import solvery.cards.service.UserServiceInterfaceTest;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-@Tag("fast")
-class UserServiceTest {
+class UserServiceUnitTest extends AbstractServiceUnitTest implements UserServiceInterfaceTest {
 
   @Mock
   private UserRepository repository;
@@ -34,12 +30,8 @@ class UserServiceTest {
   @InjectMocks
   private UserService service;
 
-  private final User exceptedUser =
-      new User(1, "u1", "@@", "user1", "a@b.ru",
-          Collections.singleton(Role.USER), true);
-
   @Test
-  void create() {
+  public void create() {
     when(repository.save(exceptedUser)).thenReturn(exceptedUser);
 
     User user =
@@ -55,23 +47,30 @@ class UserServiceTest {
   }
 
   @Test
-  void create_duplicateUsername() {
+  @Override
+  public void createShouldReturnDuplicateUsername() {
     User newUser = new User(2, "u1", "1", "user2", "b@c.ru");
-    when(repository.save(newUser)).thenThrow(new DataIntegrityViolationException(""));
+    when(repository.save(newUser)).thenThrow(new DataIntegrityViolationException("42"));
 
-    assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
+    DataIntegrityViolationException exception =
+        assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
+    assertEquals("42", exception.getMessage());
   }
 
   @Test
-  void create_duplicateEmail() {
+  @Override
+  public void createShouldReturnDuplicateEmail() {
     User newUser = new User(2, "u2", "1", "user2", "a@b.ru");
-    when(repository.save(newUser)).thenThrow(new DataIntegrityViolationException(""));
+    when(repository.save(newUser)).thenThrow(new DataIntegrityViolationException("42"));
 
-    assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
+    DataIntegrityViolationException exception =
+        assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
+    assertEquals("42", exception.getMessage());
   }
 
   @Test
-  void loadUserByUsername() {
+  @Override
+  public void loadUserByUsername() {
     when(repository.findByUsername("u1")).thenReturn(exceptedUser);
 
     UserDetails actualUser = service.loadUserByUsername("u1");
@@ -82,9 +81,13 @@ class UserServiceTest {
   }
 
   @Test
-  void loadUserByUsername_notFound() {
-    when(repository.findByUsername(anyString())).thenThrow(new UsernameNotFoundException(""));
+  @Override
+  public void loadUserByUsernameShouldReturnNotFound() {
+    when(repository.findByUsername("u1")).thenReturn(null);
+    when(messageSourceAccessor.getMessage(eq("user.userNameNotFound"))).thenReturn("42");
 
-    assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("u1"));
+    UsernameNotFoundException exception =
+        assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("u1"));
+    assertEquals("42", exception.getMessage());
   }
 }

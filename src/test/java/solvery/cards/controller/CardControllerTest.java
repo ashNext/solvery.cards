@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.EXCEPTION_DUPLICATE_CARD;
 
-//@WithMockUser(authorities = "u1")
 @WithUserDetails(value = "u1")
 @Sql(
     value = {"/create-users-before.sql", "/create-cards-before.sql"},
@@ -46,15 +45,11 @@ class CardControllerTest extends AbstractControllerTest {
   @Test
   @SuppressWarnings(value = "unchecked")
   void getAllEnabled() throws Exception {
-    MvcResult result = mockMvc.perform(get("/card")
-//        .with(user("u1"))
-//        .with(httpBasic("u1", "1"))
-    )
+    MvcResult result = mockMvc.perform(get("/card"))
         .andDo(print())
         .andExpect(authenticated().withUsername("u1"))
         .andExpect(status().isOk())
         .andExpect(view().name("card"))
-//        .andExpect(model().attribute("cards", equalTo(cards)))
         .andExpect(model().attribute("cardTo", equalTo(new CardTo())))
         .andExpect(content().string(containsString("Cards")))
         .andExpect(xpath("//div[@id='card-list']/table/tbody/tr").nodeCount(3))
