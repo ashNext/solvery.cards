@@ -43,7 +43,7 @@ public class CardController {
       return "card";
     }
 
-    service.create(new Card(user, cardTo.getNumb(), 0));
+    service.create(new Card(user, cardTo.getNumb()));
     return "redirect:/card";
   }
 

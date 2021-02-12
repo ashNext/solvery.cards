@@ -56,6 +56,10 @@ public class Card {
     this(null, user, numb, balance);
   }
 
+  public Card(User user, String numb) {
+    this(user, numb, null);
+  }
+
   public Integer getId() {
     return id;
   }

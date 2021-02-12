@@ -2,7 +2,6 @@ package solvery.cards.service.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,9 +23,6 @@ class UserServiceIntegrationTest extends AbstractServiceIntegrationTest implemen
 
   @Autowired
   private UserService service;
-
-  @Autowired
-  private MessageSourceAccessor messageSourceAccessor;
 
   @Test
   @Override
