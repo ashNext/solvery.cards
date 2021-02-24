@@ -12,10 +12,12 @@ import solvery.cards.service.CardService;
 import solvery.cards.service.OperationService;
 import solvery.cards.service.OperationServiceInterfaceTest;
 import solvery.cards.util.exception.BalanceOutRangeException;
+import solvery.cards.util.exception.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +41,26 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
   private final static Operation exceptedOperation =
       new Operation(1L, exceptedCard1, "", 1000, 3000, exceptedNow);
 
+  @Test
+  @Override
+  public void get() {
+    when(repository.findById(1L)).thenReturn(Optional.of(exceptedOperation));
+
+    Operation actualOperation = service.get(1L);
+
+    assertEquals(exceptedOperation, actualOperation);
+    verify(repository, times(1)).findById(1L);
+  }
+
+  @Test
+  @Override
+  public void getShouldReturnMotFound() {
+    when(repository.findById(1L)).thenReturn(Optional.empty());
+    when(messageSourceAccessor.getMessage("operation.notFound")).thenReturn("42");
+
+    NotFoundException exception = assertThrows(NotFoundException.class, () -> service.get(1L));
+    assertEquals("42", exception.getMessage());
+  }
 
   @Test
   @Override

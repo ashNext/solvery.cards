@@ -12,6 +12,7 @@ import solvery.cards.model.Operation;
 import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.CardUtil;
 import solvery.cards.util.exception.BalanceOutRangeException;
+import solvery.cards.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +36,12 @@ public class OperationService {
     this.repository = repository;
     this.cardService = cardService;
     this.messageSourceAccessor = messageSourceAccessor;
+  }
+
+  public Operation get(long id) {
+    return repository.findById(id)
+        .orElseThrow(() -> new NotFoundException(
+            messageSourceAccessor.getMessage("operation.notFound")));
   }
 
   @Transactional
@@ -77,11 +84,11 @@ public class OperationService {
                                      int typeId, LocalDate startDate, LocalDate endDate) {
     Card card = cardService.getEnabledById(cardId);
 
-    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
-        && directionId == 0 && typeId == 0) {
-      startDate = LocalDate.now().minusDays(2);
-      endDate = LocalDate.now();
-    }
+//    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
+//        && directionId == 0 && typeId == 0) {
+//      startDate = LocalDate.now().minusDays(2);
+//      endDate = LocalDate.now();
+//    }
 
     if (StringUtils.hasText(recipientCardNumb) && typeId == 1) {
       recipientCardNumb = null;
@@ -112,7 +119,10 @@ public class OperationService {
               .getMessage("operation.lower.balance", new Object[]{operation.getCard().getNumb()}));
     }
 
-    operation.getCard().setBalance(newBalance);
+//    operation.getCard().setBalance(newBalance);
+    Card card = operation.getCard();
+    card.setBalance(newBalance);
+    cardService.update(card);
     operation.setCardBalance(newBalance);
   }
 }
