@@ -1,14 +1,14 @@
 package solvery.cards.model;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 import solvery.cards.util.DateTimeUtil;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "operations")
@@ -126,17 +126,12 @@ public class Operation {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Operation operation = (Operation) o;
-    return Objects.equals(id, operation.id) &&
-        Objects.equals(card, operation.card) &&
-        Objects.equals(recipientCardNumb, operation.recipientCardNumb) &&
-        Objects.equals(sum, operation.sum) &&
-        Objects.equals(cardBalance, operation.cardBalance) &&
-        Objects.equals(dateTime, operation.dateTime);
+    return Objects.equals(id, operation.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, card, recipientCardNumb, sum, cardBalance, dateTime);
+    return Objects.hash(id);
   }
 
   @Override

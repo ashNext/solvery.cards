@@ -15,13 +15,14 @@ import solvery.cards.util.exception.BalanceOutRangeException;
 import solvery.cards.util.exception.NotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static solvery.cards.OperationTestData.CARD1;
+import static solvery.cards.OperationTestData.OPERATIONS_CARD1;
 
 class OperationServiceUnitTest extends AbstractServiceUnitTest implements OperationServiceInterfaceTest {
 
@@ -172,26 +173,8 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
   @Test
   @Override
   public void getByFilter() {
-    Card card = new Card(1, exceptedUser, "11", 7000, true);
-    List<Operation> operations = new ArrayList<>(List.of(
-        new Operation(1L, card, null, 10000, 10000,
-            LocalDateTime.of(2021, 1, 2, 11, 0)),
-        new Operation(2L, card, null, -2000, 8000,
-            LocalDateTime.of(2021, 1, 2, 12, 0)),
-        new Operation(3L, card, "12", -3000, 5000,
-            LocalDateTime.of(2021, 1, 3, 10, 0)),
-        new Operation(4L, card, "11", 3000, 3000,
-            LocalDateTime.of(2021, 1, 3, 10, 0)),
-        new Operation(5L, card, "11", -1000, 2000,
-            LocalDateTime.of(2021, 1, 4, 13, 0)),
-        new Operation(6L, card, "12", 1000, 6000,
-            LocalDateTime.of(2021, 1, 4, 13, 0)),
-        new Operation(7L, card, null, -2000, 4000,
-            LocalDateTime.of(2021, 1, 5, 11, 0)),
-        new Operation(8L, card, null, 3000, 7000,
-            LocalDateTime.of(2021, 1, 5, 12, 0))
-    ));
-    operations.sort((o1, o2) -> o2.getDateTime().compareTo(o1.getDateTime()));
+    Card card = CARD1;
+    List<Operation> operations = OPERATIONS_CARD1;
 
     when(cardService.getEnabledById(eq(1))).thenReturn(card);
     when(repository.findAll(
