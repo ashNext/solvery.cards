@@ -28,6 +28,7 @@ import static solvery.cards.OperationTestData.*;
 @Sql(
     value = {"/create-cards-after.sql", "/create-users-after.sql", "/create-operations-after.sql"},
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//@Transactional
 public class OperationServiceIntegrationTest extends AbstractServiceIntegrationTest implements OperationServiceInterfaceTest {
 
   @Autowired
@@ -61,10 +62,10 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
     Operation actualOperation =
         operationService.create(
             new Operation(cardService.getEnabledById(CARD1.getId()), OPERATION_DEPOSIT_CARD1.getSum(), now));
+    Operation createdOperation = operationService.get(OPERATION_DEPOSIT_CARD1.getId());
 
-    assertThat(actualOperation).usingRecursiveComparison().ignoringFields("card").isEqualTo(exceptedOperation);
-    assertThat(operationService.get(OPERATION_DEPOSIT_CARD1.getId()))
-        .usingRecursiveComparison().ignoringFields("card").isEqualTo(exceptedOperation);
+    OPERATION_MATCHER.assertMatch(actualOperation, exceptedOperation);
+    OPERATION_MATCHER.assertMatch(createdOperation, exceptedOperation);
     assertEquals(CARD1.getBalance() + OPERATION_DEPOSIT_CARD1.getSum(),
         cardService.getEnabledById(CARD1.getId()).getBalance());
   }
@@ -74,11 +75,11 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   public void addMoney() {
     Operation exceptedOperation = OPERATION_DEPOSIT_CARD1;
     Operation actualOperation = operationService.addMoney(CARD1.getId(), OPERATION_DEPOSIT_CARD1.getSum());
+    Operation addedOperation = operationService.get(OPERATION_DEPOSIT_CARD1.getId());
+    exceptedOperation.setDateTime(addedOperation.getDateTime());
 
-    assertThat(actualOperation)
-        .usingRecursiveComparison().ignoringFields("card", "dateTime").isEqualTo(exceptedOperation);
-    assertThat(operationService.get(OPERATION_DEPOSIT_CARD1.getId()))
-        .usingRecursiveComparison().ignoringFields("card", "dateTime").isEqualTo(exceptedOperation);
+    OPERATION_MATCHER.assertMatch(actualOperation, exceptedOperation);
+    OPERATION_MATCHER.assertMatch(addedOperation, exceptedOperation);
     assertEquals(CARD1.getBalance() + OPERATION_DEPOSIT_CARD1.getSum(),
         cardService.getEnabledById(CARD1.getId()).getBalance());
   }
@@ -101,11 +102,10 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   public void withdrawMoney() {
     Operation exceptedOperation = OPERATION_WITHDRAW_CARD1;
     Operation actualOperation = operationService.withdrawMoney(CARD1.getId(), -OPERATION_WITHDRAW_CARD1.getSum());
+    Operation withdrawnOperation = operationService.get(OPERATION_WITHDRAW_CARD1.getId());
 
-    assertThat(actualOperation)
-        .usingRecursiveComparison().ignoringFields("card", "dateTime").isEqualTo(exceptedOperation);
-    assertThat(operationService.get(OPERATION_WITHDRAW_CARD1.getId()))
-        .usingRecursiveComparison().ignoringFields("card", "dateTime").isEqualTo(exceptedOperation);
+    OPERATION_MATCHER.assertMatch(actualOperation, exceptedOperation);
+    OPERATION_MATCHER.assertMatch(withdrawnOperation, exceptedOperation);
     assertEquals(CARD1.getBalance() + OPERATION_WITHDRAW_CARD1.getSum(),
         cardService.getEnabledById(CARD1.getId()).getBalance());
   }
@@ -130,10 +130,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
     Operation actualSenderOperation = operationService.get(OPERATION_TRANSFER_FROM_CARD1.getId());
     Operation actualRecipientOperation = operationService.get(OPERATION_TRANSFER_TO_CARD2.getId());
 
-    assertThat(actualSenderOperation)
-        .usingRecursiveComparison().ignoringFields("card", "dateTime").isEqualTo(OPERATION_TRANSFER_FROM_CARD1);
-    assertThat(actualRecipientOperation)
-        .usingRecursiveComparison().ignoringFields("card", "dateTime").isEqualTo(OPERATION_TRANSFER_TO_CARD2);
+    OPERATION_MATCHER.assertMatch(actualSenderOperation, OPERATION_TRANSFER_FROM_CARD1);
+    OPERATION_MATCHER.assertMatch(actualRecipientOperation, OPERATION_TRANSFER_TO_CARD2);
     assertEquals(CARD1.getBalance() + OPERATION_TRANSFER_FROM_CARD1.getSum(),
         cardService.getEnabledById(CARD1.getId()).getBalance());
     assertEquals(CARD2.getBalance() + OPERATION_TRANSFER_TO_CARD2.getSum(),
@@ -187,7 +185,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, 0, 0, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(OPERATIONS_CARD1);
+    OPERATION_MATCHER.assertMatch(actualOperations, OPERATIONS_CARD1);
   }
 
   @Test
@@ -201,7 +199,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, -1, 0, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
@@ -215,7 +213,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, 1, 0, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
@@ -229,7 +227,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, 0, 1, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
@@ -243,7 +241,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, 0, 2, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
@@ -257,7 +255,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), CARD2.getNumb(), 0, 0, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
@@ -272,7 +270,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, 0, 0, startDate, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
@@ -287,19 +285,17 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), null, 0, 0, null, endDate);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 
   @Test
   public void getByFilterOnSomeParams() {
-    List<Operation> exceptedOperations = List.of(OPERATION3_CARD1);
-
     List<Operation> actualOperations =
         operationService.getByFilter(CARD1.getId(), CARD2.getNumb(), -1, 2,
             LocalDate.of(2021, 1, 20),
             LocalDate.of(2021, 1, 21));
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, OPERATION3_CARD1);
   }
 
   @Test
@@ -313,6 +309,6 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
         operationService.getByFilter(
             CARD1.getId(), CARD2.getNumb(), 0, 1, null, null);
 
-    assertThat(actualOperations).usingElementComparatorIgnoringFields("card").isEqualTo(exceptedOperations);
+    OPERATION_MATCHER.assertMatch(actualOperations, exceptedOperations);
   }
 }

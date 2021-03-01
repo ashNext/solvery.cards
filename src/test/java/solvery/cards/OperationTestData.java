@@ -11,6 +11,9 @@ import java.util.List;
 
 public class OperationTestData {
 
+//  public static TestMatcher<Operation> OPERATION_MATCHER = TestMatcher.usingFieldsWithIgnoringAssertions("card");
+  public static TestMatcher<Operation> OPERATION_MATCHER = TestMatcher.usingEqualsAssertions();
+
   public final static User USER1 =
       new User(1, "u1", "1", "user1", "user1@a.ru",
           Collections.singleton(Role.USER), true);
