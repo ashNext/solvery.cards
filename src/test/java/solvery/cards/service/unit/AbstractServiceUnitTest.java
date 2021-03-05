@@ -10,6 +10,7 @@ import solvery.cards.model.Role;
 import solvery.cards.model.User;
 
 import java.util.Collections;
+import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 @Tag("fast")
@@ -19,7 +20,12 @@ public abstract class AbstractServiceUnitTest {
       new User(1, "u1", "@@", "user1", "a@b.ru",
           Collections.singleton(Role.USER), true);
 
+  protected final static User exceptedAdvancedUser =
+      new User(4, "au4", "@@", "advanced user 4", "auser4@a.ru",
+          Set.of(Role.USER, Role.USER_ADVANCED), true);
+
   protected final static Card exceptedCard = new Card(1, exceptedUser, "11", 0, true);
+  protected final static Card exceptedDisabledCard = new Card(10, exceptedAdvancedUser, "42", 0, false);
 
   @Mock
   protected MessageSourceAccessor messageSourceAccessor;

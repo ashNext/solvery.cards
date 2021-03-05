@@ -14,11 +14,16 @@ import java.util.Optional;
 public interface CardRepository extends JpaRepository<Card, Integer> {
 
   @Query("SELECT c FROM Card c WHERE c.user=:user AND c.enabled=:enabled ORDER BY c.id")
-  List<Card> getAllByUser(User user, boolean enabled);
+  List<Card> getAllByUserAndEnabled(User user, boolean enabled);
+
+  @Query("SELECT c FROM Card c WHERE c.user=:user ORDER BY c.id")
+  List<Card> getAllByUser(User user);
 
   Optional<Card> findByNumb(String numb);
 
   Optional<Card> findByNumbAndEnabledTrue(String numb);
 
   Optional<Card> findByIdAndEnabledTrue(Integer id);
+
+  Optional<Card> findByIdAndEnabledFalse(Integer id);
 }

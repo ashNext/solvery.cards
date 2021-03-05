@@ -13,6 +13,7 @@ import solvery.cards.util.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,16 +28,71 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
 
   @Test
   @Override
+  public void getAllByUser() {
+    List<Card> exceptedCards = List.of(
+        new Card(1, exceptedUser, "11", 0, true),
+        new Card(2, exceptedUser, "12", 0, true),
+        new Card(3, exceptedUser, "13", 0, true)
+    );
+    when(repository.getAllByUserAndEnabled(exceptedUser, true)).thenReturn(exceptedCards);
+    List<Card> actualCards = service.getAllByUser(exceptedUser);
+    assertIterableEquals(exceptedCards, actualCards);
+
+    verify(repository).getAllByUserAndEnabled(exceptedUser, true);
+    verifyNoMoreInteractions(repository);
+  }
+
+  @Test
+  @Override
+  public void getAllByUserAdvanced() {
+    List<Card> exceptedCards = List.of(
+        new Card(9, exceptedAdvancedUser, "41", 0, true),
+        new Card(10, exceptedAdvancedUser, "42", 0, false),
+        new Card(11, exceptedAdvancedUser, "43", 0, true),
+        new Card(12, exceptedAdvancedUser, "44", 0, false)
+    );
+    when(repository.getAllByUser(exceptedAdvancedUser)).thenReturn(exceptedCards);
+    List<Card> actualCards = service.getAllByUser(exceptedAdvancedUser);
+    assertIterableEquals(exceptedCards, actualCards);
+
+    verify(repository).getAllByUser(exceptedAdvancedUser);
+    verifyNoMoreInteractions(repository);
+  }
+
+  @Test
+  @Override
   public void getAllEnabledByUser() {
     List<Card> exceptedCards = List.of(
-        new Card(1, exceptedUser, "11", 0),
-        new Card(2, exceptedUser, "12", 1000)
+        new Card(1, exceptedUser, "11", 0, true),
+        new Card(2, exceptedUser, "12", 0, true),
+        new Card(3, exceptedUser, "13", 0, true)
     );
-    when(repository.getAllByUser(exceptedUser, true)).thenReturn(exceptedCards);
+    when(repository.getAllByUserAndEnabled(exceptedUser, true)).thenReturn(exceptedCards);
     List<Card> actualCards = service.getAllEnabledByUser(exceptedUser);
     assertIterableEquals(exceptedCards, actualCards);
 
-    verify(repository).getAllByUser(exceptedUser, true);
+    verify(repository).getAllByUserAndEnabled(exceptedUser, true);
+    verifyNoMoreInteractions(repository);
+  }
+
+  @Test
+  @Override
+  public void getAllEnabledByUserAdvanced() {
+    List<Card> exceptedCards = List.of(
+        new Card(9, exceptedAdvancedUser, "41", 0, true),
+        new Card(10, exceptedAdvancedUser, "42", 0, false),
+        new Card(11, exceptedAdvancedUser, "43", 0, true),
+        new Card(12, exceptedAdvancedUser, "44", 0, false)
+    );
+    when(repository.getAllByUser(exceptedAdvancedUser)).thenReturn(exceptedCards);
+    List<Card> actualCards = service.getAllEnabledByUser(exceptedAdvancedUser);
+    assertIterableEquals(
+        exceptedCards.stream()
+            .filter(Card::isEnabled)
+            .collect(Collectors.toList()),
+        actualCards);
+
+    verify(repository).getAllByUser(exceptedAdvancedUser);
     verifyNoMoreInteractions(repository);
   }
 
@@ -126,6 +182,47 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
 
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> service.getEnabledByCardNumb("11"));
+    assertEquals("42", exception.getMessage());
+  }
+
+  @Test
+  @Override
+  public void openBack() {
+    when(repository.findByIdAndEnabledFalse(10)).thenReturn(Optional.of(exceptedDisabledCard));
+    Card enabledCard = exceptedDisabledCard;
+    enabledCard.setEnabled(true);
+    when(repository.save(enabledCard)).thenReturn(enabledCard);
+
+    Card actualCard = service.openBack(10);
+
+    assertEquals(enabledCard, actualCard);
+    verify(repository, times(1)).findByIdAndEnabledFalse(10);
+    verify(repository, times(1)).save(enabledCard);
+    verifyNoMoreInteractions(repository);
+  }
+
+  @Test
+  @Override
+  public void getDisabledById() {
+    when(repository.findByIdAndEnabledFalse(4)).thenReturn(Optional.of(exceptedDisabledCard));
+
+    Card actualCard = service.getDisabledById(4);
+
+    assertEquals(exceptedDisabledCard, actualCard);
+    verify(repository, times(1)).findByIdAndEnabledFalse(4);
+  }
+
+  @Test
+  @Override
+  public void getDisabledByIdShouldReturnNotFound() {
+    when(repository.findByIdAndEnabledFalse(1)).thenReturn(Optional.empty());
+    when(messageSourceAccessor.getMessage(
+        eq("card.cardByIdNotFound"),
+        eq(LocaleContextHolder.getLocale()))
+    ).thenReturn("42");
+
+    NotFoundException exception =
+        assertThrows(NotFoundException.class, () -> service.getDisabledById(1));
     assertEquals("42", exception.getMessage());
   }
 }

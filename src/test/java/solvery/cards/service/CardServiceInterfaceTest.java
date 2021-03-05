@@ -2,7 +2,13 @@ package solvery.cards.service;
 
 public interface CardServiceInterfaceTest {
 
+  void getAllByUser();
+
+  void getAllByUserAdvanced();
+
   void getAllEnabledByUser();
+
+  void getAllEnabledByUserAdvanced();
 
   void create();
 
@@ -17,4 +23,10 @@ public interface CardServiceInterfaceTest {
   void getEnabledByCardNumb();
 
   void getEnabledByCardNumbShouldReturnNotFound();
+
+  void openBack();
+
+  void getDisabledById();
+
+  void getDisabledByIdShouldReturnNotFound();
 }

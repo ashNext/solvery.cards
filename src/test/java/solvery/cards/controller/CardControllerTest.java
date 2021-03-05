@@ -83,7 +83,7 @@ class CardControllerTest extends AbstractControllerTest {
 
   @Test
   void create() throws Exception {
-    Card exceptedCard = new Card(9, user1, "100", 0, true);
+    Card exceptedCard = new Card(13, user1, "100", 0, true);
     mockMvc.perform(post("/card")
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("numb", "100")
@@ -130,7 +130,7 @@ class CardControllerTest extends AbstractControllerTest {
         .filter(card -> card.getId() != 2)
         .collect(Collectors.toList());
 
-    assertThat(service.getAllEnabledByUser(user1)).usingRecursiveComparison()
+    assertThat(service.getAllByUser(user1)).usingRecursiveComparison()
         .ignoringFields("user.password")
         .isEqualTo(enabledCards);
   }

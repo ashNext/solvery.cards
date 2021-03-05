@@ -7,11 +7,13 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solvery.cards.model.Card;
+import solvery.cards.model.Role;
 import solvery.cards.model.User;
 import solvery.cards.repository.CardRepository;
 import solvery.cards.util.exception.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,8 +29,21 @@ public class CardService {
   }
 
   @Cacheable(value = "cards")
+  public List<Card> getAllByUser(User user) {
+    if (user.getRoles().contains(Role.USER_ADVANCED))
+      return repository.getAllByUser(user);
+    else
+      return repository.getAllByUserAndEnabled(user, true);
+  }
+
+  @Cacheable(value = "cards")
   public List<Card> getAllEnabledByUser(User user) {
-    return repository.getAllByUser(user, true);
+    if (user.getRoles().contains(Role.USER_ADVANCED))
+      return getAllByUser(user).stream()
+          .filter(Card::isEnabled)
+          .collect(Collectors.toList());
+    else
+      return getAllByUser(user);
   }
 
   @Transactional
@@ -51,6 +66,12 @@ public class CardService {
             messageSourceAccessor.getMessage("card.cardByIdNotFound", LocaleContextHolder.getLocale())));
   }
 
+  public Card getDisabledById(Integer id) {
+    return repository.findByIdAndEnabledFalse(id)
+        .orElseThrow(() -> new NotFoundException(
+            messageSourceAccessor.getMessage("card.cardByIdNotFound", LocaleContextHolder.getLocale())));
+  }
+
   public Card getEnabledByCardNumb(String cardNumb) {
     return repository.findByNumbAndEnabledTrue(cardNumb)
         .orElseThrow(() -> new NotFoundException(
@@ -64,6 +85,15 @@ public class CardService {
   public Card close(Integer id) {
     Card card = getEnabledById(id);
     card.setEnabled(false);
+    update(card);
+    return card;
+  }
+
+  @Transactional
+  @CacheEvict(value = "cards", allEntries = true)
+  public Card openBack(Integer id) {
+    Card card = getDisabledById(id);
+    card.setEnabled(true);
     update(card);
     return card;
   }

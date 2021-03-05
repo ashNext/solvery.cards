@@ -15,8 +15,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 import solvery.cards.model.Card;
+import solvery.cards.model.Role;
 import solvery.cards.model.User;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +34,7 @@ public class CardCachingTest {
   private CardService mock;
 
   @Autowired
-  private CardService service;
+  private CardService cardService;
 
   @Autowired
   private OperationService operationService;
@@ -40,11 +42,14 @@ public class CardCachingTest {
   @Autowired
   private CacheManager cacheManager;
 
-  private final static User user = new User(1, "u1", "@@", "user1", "a@b.ru");
+  private final static User user =
+      new User(1, "u1", "1", "user1", "user1@a.ru",
+          Collections.singleton(Role.USER), true);
 
   private final static List<Card> exceptedCards = List.of(
-      new Card(1, user, "11", 0),
-      new Card(2, user, "12", 1000)
+      new Card(1, user, "11", 0, true),
+      new Card(2, user, "12", 0, true),
+      new Card(3, user, "13", 0, true)
   );
 
   @Configuration
@@ -70,70 +75,79 @@ public class CardCachingTest {
   @BeforeEach
   void setUp() {
     Objects.requireNonNull(cacheManager.getCache("cards")).clear();
-    mock = AopTestUtils.getTargetObject(service);
+    mock = AopTestUtils.getTargetObject(cardService);
     reset(mock);
-    when(mock.getAllEnabledByUser(user)).thenReturn(exceptedCards);
+    when(mock.getAllByUser(user)).thenReturn(exceptedCards);
   }
 
   @Test
-  void getAllEnabledByUser() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    verify(mock, times(1)).getAllEnabledByUser(user);
+  void getAllByUser() {
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    verify(mock, times(1)).getAllByUser(user);
   }
 
   @Test
   void create() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    service.getAllEnabledByUser(user);
-    service.create(new Card(1, user, "13", 0));
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    verify(mock, times(2)).getAllEnabledByUser(user);
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
+    cardService.create(new Card(1, user, "13", 0));
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    verify(mock, times(2)).getAllByUser(user);
   }
 
   @Test
   void update() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    service.getAllEnabledByUser(user);
-    service.update(new Card(2, user, "12", 100));
-    service.getAllEnabledByUser(user);
-    verify(mock, times(2)).getAllEnabledByUser(user);
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
+    cardService.update(new Card(2, user, "12", 100));
+    cardService.getAllByUser(user);
+    verify(mock, times(2)).getAllByUser(user);
   }
 
   @Test
   void close() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    service.getAllEnabledByUser(user);
-    service.close(1);
-    service.getAllEnabledByUser(user);
-    verify(mock, times(2)).getAllEnabledByUser(user);
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
+    cardService.close(1);
+    cardService.getAllByUser(user);
+    verify(mock, times(2)).getAllByUser(user);
+  }
+
+  @Test
+  void openBack() {
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
+    cardService.openBack(1);
+    cardService.getAllByUser(user);
+    verify(mock, times(2)).getAllByUser(user);
   }
 
   @Test
   void addMoney() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    service.getAllEnabledByUser(user);
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
     operationService.addMoney(1, 100);
-    service.getAllEnabledByUser(user);
-    verify(mock, times(2)).getAllEnabledByUser(user);
+    cardService.getAllByUser(user);
+    verify(mock, times(2)).getAllByUser(user);
   }
 
   @Test
   void withdrawMoney() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    service.getAllEnabledByUser(user);
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
     operationService.withdrawMoney(1, 100);
-    service.getAllEnabledByUser(user);
-    verify(mock, times(2)).getAllEnabledByUser(user);
+    cardService.getAllByUser(user);
+    verify(mock, times(2)).getAllByUser(user);
   }
 
   @Test
   void transferMoney() {
-    assertIterableEquals(exceptedCards, service.getAllEnabledByUser(user));
-    service.getAllEnabledByUser(user);
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    cardService.getAllByUser(user);
     operationService.transferMoney(1, "12", 100);
-    service.getAllEnabledByUser(user);
-    verify(mock, times(2)).getAllEnabledByUser(user);
+    cardService.getAllByUser(user);
+    verify(mock, times(2)).getAllByUser(user);
   }
 }

@@ -27,7 +27,7 @@ public class CardController {
 
   @GetMapping
   public String getAllEnabled(@AuthenticationPrincipal User user, Model model) {
-    model.addAttribute("cards", cardService.getAllEnabledByUser(user));
+    model.addAttribute("cards", cardService.getAllByUser(user));
     model.addAttribute("cardDTO", new CardDTO());
     return "card";
   }
@@ -39,7 +39,7 @@ public class CardController {
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("cards", cardService.getAllEnabledByUser(user));
+      model.addAttribute("cards", cardService.getAllByUser(user));
       return "card";
     }
 
