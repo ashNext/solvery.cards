@@ -2,6 +2,7 @@ package solvery.cards.service;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,13 +48,15 @@ public class CardService {
   public Card getEnabledById(Integer id) {
     return repository.findByIdAndEnabledTrue(id)
         .orElseThrow(() -> new NotFoundException(
-            messageSourceAccessor.getMessage("card.cardByIdNotFound")));
+            messageSourceAccessor.getMessage("card.cardByIdNotFound", LocaleContextHolder.getLocale())));
   }
 
   public Card getEnabledByCardNumb(String cardNumb) {
     return repository.findByNumbAndEnabledTrue(cardNumb)
         .orElseThrow(() -> new NotFoundException(
-            messageSourceAccessor.getMessage("card.numbNotFound", new Object[]{cardNumb})));
+            messageSourceAccessor.getMessage("card.numbNotFound",
+                new Object[]{cardNumb},
+                LocaleContextHolder.getLocale())));
   }
 
   @Transactional

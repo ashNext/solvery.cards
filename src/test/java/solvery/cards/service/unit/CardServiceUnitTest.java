@@ -3,6 +3,7 @@ package solvery.cards.service.unit;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import solvery.cards.model.Card;
 import solvery.cards.repository.CardRepository;
@@ -92,7 +93,10 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
   @Override
   public void getEnabledByIdShouldReturnNotFound() {
     when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage(eq("card.cardByIdNotFound"))).thenReturn("42");
+    when(messageSourceAccessor.getMessage(
+        eq("card.cardByIdNotFound"),
+        eq(LocaleContextHolder.getLocale()))
+    ).thenReturn("42");
 
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> service.getEnabledById(1));
@@ -116,7 +120,8 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
     when(repository.findByNumbAndEnabledTrue("11")).thenReturn(Optional.empty());
     when(messageSourceAccessor.getMessage(
         eq("card.numbNotFound"),
-        eq(new Object[]{"11"}))
+        eq(new Object[]{"11"}),
+        eq(LocaleContextHolder.getLocale()))
     ).thenReturn("42");
 
     NotFoundException exception =

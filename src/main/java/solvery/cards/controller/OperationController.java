@@ -1,5 +1,7 @@
 package solvery.cards.controller;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -29,9 +31,12 @@ public class OperationController {
 
   private final CardService cardService;
 
-  public OperationController(OperationService operationService, CardService cardService) {
+  private final MessageSourceAccessor messageSourceAccessor;
+
+  public OperationController(OperationService operationService, CardService cardService, MessageSourceAccessor messageSourceAccessor) {
     this.operationService = operationService;
     this.cardService = cardService;
+    this.messageSourceAccessor = messageSourceAccessor;
   }
 
   @GetMapping
@@ -41,18 +46,20 @@ public class OperationController {
 
   @GetMapping("/result")
   public String getResultOperation(@RequestParam @Nullable String type, @RequestParam String status, Model model) {
-    String resultStatus = "Операция не была проведена";
+    String resultStatus =
+        messageSourceAccessor.getMessage("operation.result.status.bad", LocaleContextHolder.getLocale());
     if ("ok".equalsIgnoreCase(status)) {
-      resultStatus = "Операция успешно завершена";
+      resultStatus =
+          messageSourceAccessor.getMessage("operation.result.status.ok", LocaleContextHolder.getLocale());
     }
 
     String message = "";
     if ("add".equalsIgnoreCase(type)) {
-      message = "Средства зачислены на баланс карты";
+      message = messageSourceAccessor.getMessage("operation.result.deposit.ok", LocaleContextHolder.getLocale());
     } else if ("withdraw".equalsIgnoreCase(type)) {
-      message = "Средства сняты с баланса карты";
+      message = messageSourceAccessor.getMessage("operation.result.withdraw.ok", LocaleContextHolder.getLocale());
     } else if ("transfer".equalsIgnoreCase(type)) {
-      message = "Средства переведены получателю";
+      message = messageSourceAccessor.getMessage("operation.result.transfer.ok", LocaleContextHolder.getLocale());
     }
 
     model.addAttribute("resultStatus", resultStatus);

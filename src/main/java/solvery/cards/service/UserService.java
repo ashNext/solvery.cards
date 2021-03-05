@@ -1,5 +1,6 @@
 package solvery.cards.service;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,7 +42,7 @@ public class UserService implements UserDetailsService {
     User user = repository.findByUsername(username);
     if (user == null) {
       throw new UsernameNotFoundException(
-          messageSourceAccessor.getMessage("user.userNameNotFound"));
+          messageSourceAccessor.getMessage("user.userNameNotFound", LocaleContextHolder.getLocale()));
     }
     return user;
   }

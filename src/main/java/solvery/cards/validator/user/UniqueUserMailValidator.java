@@ -1,5 +1,6 @@
 package solvery.cards.validator.user;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -18,7 +19,7 @@ public class UniqueUserMailValidator extends AbstractUserValidator {
 
     if (user != null) {
       errors.rejectValue("email", user.getEmail(), null, messageSourceAccessor.getMessage(
-          ErrorExceptionHandler.EXCEPTION_DUPLICATE_EMAIL));
+          ErrorExceptionHandler.EXCEPTION_DUPLICATE_EMAIL, LocaleContextHolder.getLocale()));
     }
   }
 }

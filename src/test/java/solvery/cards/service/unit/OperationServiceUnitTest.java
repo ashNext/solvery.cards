@@ -3,6 +3,7 @@ package solvery.cards.service.unit;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import solvery.cards.model.Card;
@@ -57,7 +58,10 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
   @Override
   public void getShouldReturnMotFound() {
     when(repository.findById(1L)).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage("operation.notFound")).thenReturn("42");
+    when(messageSourceAccessor.getMessage(
+        eq("operation.notFound"),
+        eq(LocaleContextHolder.getLocale()))
+    ).thenReturn("42");
 
     NotFoundException exception = assertThrows(NotFoundException.class, () -> service.get(1L));
     assertEquals("42", exception.getMessage());
@@ -107,7 +111,8 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
     when(messageSourceAccessor.getMessage(
         eq("operation.over.balance"),
-        eq(new Object[]{"11"}))
+        eq(new Object[]{"11"}),
+        eq(LocaleContextHolder.getLocale()))
     ).thenReturn("42");
 
     BalanceOutRangeException exception = assertThrows(
@@ -142,7 +147,8 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
     when(messageSourceAccessor.getMessage(
         eq("operation.lower.balance"),
-        eq(new Object[]{"11"}))
+        eq(new Object[]{"11"}),
+        eq(LocaleContextHolder.getLocale()))
     ).thenReturn("42");
 
     BalanceOutRangeException exception = assertThrows(

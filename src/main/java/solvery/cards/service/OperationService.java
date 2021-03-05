@@ -1,6 +1,7 @@
 package solvery.cards.service;
 
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -41,7 +42,7 @@ public class OperationService {
   public Operation get(long id) {
     return repository.findById(id)
         .orElseThrow(() -> new NotFoundException(
-            messageSourceAccessor.getMessage("operation.notFound")));
+            messageSourceAccessor.getMessage("operation.notFound", LocaleContextHolder.getLocale())));
   }
 
   @Transactional
@@ -110,13 +111,17 @@ public class OperationService {
     if (newBalance > CardUtil.MAX_BALANCE) {
       throw new BalanceOutRangeException(
           messageSourceAccessor
-              .getMessage("operation.over.balance", new Object[]{operation.getCard().getNumb()}));
+              .getMessage("operation.over.balance",
+                  new Object[]{operation.getCard().getNumb()},
+                  LocaleContextHolder.getLocale()));
     }
 
     if (newBalance < CardUtil.MIN_BALANCE) {
       throw new BalanceOutRangeException(
           messageSourceAccessor
-              .getMessage("operation.lower.balance", new Object[]{operation.getCard().getNumb()}));
+              .getMessage("operation.lower.balance",
+                  new Object[]{operation.getCard().getNumb()},
+                  LocaleContextHolder.getLocale()));
     }
 
 //    operation.getCard().setBalance(newBalance);

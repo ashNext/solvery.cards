@@ -3,6 +3,7 @@ package solvery.cards.service.unit;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -84,7 +85,10 @@ class UserServiceUnitTest extends AbstractServiceUnitTest implements UserService
   @Override
   public void loadUserByUsernameShouldReturnNotFound() {
     when(repository.findByUsername("u1")).thenReturn(null);
-    when(messageSourceAccessor.getMessage(eq("user.userNameNotFound"))).thenReturn("42");
+    when(messageSourceAccessor.getMessage(
+        eq("user.userNameNotFound"),
+        eq(LocaleContextHolder.getLocale()))
+    ).thenReturn("42");
 
     UsernameNotFoundException exception =
         assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("u1"));
