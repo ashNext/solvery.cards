@@ -4,7 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import solvery.cards.dto.UserRegistrationDTO;
 import solvery.cards.model.Role;
 import solvery.cards.model.User;
@@ -13,7 +16,8 @@ import solvery.cards.validator.user.UniqueUserMailValidator;
 import solvery.cards.validator.user.UniqueUserUsernameValidator;
 
 import javax.validation.Valid;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @RequestMapping(value = "/registration")
@@ -44,8 +48,14 @@ public class UserController {
 
   @PostMapping
   public String create(@Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
-    if (bindingResult.hasErrors()){
+    if (bindingResult.hasErrors()) {
       return "registration";
+    }
+
+    Set<Role> roles = new HashSet<>();
+    roles.add(Role.USER);
+    if (userRegistrationDTO.isAdvanced()) {
+      roles.add(Role.USER_ADVANCED);
     }
 
     User user = new User(
@@ -53,7 +63,7 @@ public class UserController {
         userRegistrationDTO.getPassword(),
         userRegistrationDTO.getFullName(),
         userRegistrationDTO.getEmail(),
-        Collections.singleton(Role.USER));
+        roles);
 
     userService.create(user);
     return "redirect:/login";

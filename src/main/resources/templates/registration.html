@@ -27,6 +27,9 @@
     <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" style="color: red; ">Confirm password</span><br>
     <label> [[#{user.retypePassword}]]: <input type="password" th:field="*{confirmPassword}"/> </label>
   </div>
+  <div>
+    <label> [[#{user.advanced}]]: <input type="checkbox" th:field="*{advanced}"/> </label>
+  </div>
   <div><input type="submit" th:value="#{login.reg}"/></div>
 </form>
 <a th:href="@{/login}" th:text="#{login.in}">Login</a>

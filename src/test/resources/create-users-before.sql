@@ -14,7 +14,12 @@ values ('u2', 'user2@a.ru', 'user2', crypt('1', gen_salt('bf', 8)));
 insert into users(username, email, full_name, password)
 values ('u3', 'user3@a.ru', 'user3', crypt('1', gen_salt('bf', 8)));
 
+insert into users(username, email, full_name, password)
+values ('au4', 'auser4@a.ru', 'advanced user 4', crypt('1', gen_salt('bf', 8)));
+
 insert into user_role (user_id, roles)
 values (1, 'USER'),
        (2, 'USER'),
-       (3, 'USER');
+       (3, 'USER'),
+       (4, 'USER'),
+       (4, 'USER_ADVANCED');

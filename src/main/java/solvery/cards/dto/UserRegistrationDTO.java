@@ -1,10 +1,10 @@
 package solvery.cards.dto;
 
+import solvery.cards.validator.FieldsValueMatch;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import solvery.cards.validator.FieldsValueMatch;
-
 import java.util.Objects;
 
 import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.EXCEPTION_NO_MATCH_RETYPE_PASSWORD;
@@ -13,7 +13,7 @@ import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.E
     @FieldsValueMatch(
         field = "confirmPassword",
         fieldMatch = "password",
-        message = "{"+EXCEPTION_NO_MATCH_RETYPE_PASSWORD+"}"
+        message = "{" + EXCEPTION_NO_MATCH_RETYPE_PASSWORD + "}"
     )
 })
 public class UserRegistrationDTO {
@@ -41,6 +41,8 @@ public class UserRegistrationDTO {
   @Size(max = 100, message = "{user.emailSize}")
   private String email;
 
+  private boolean advanced;
+
   public UserRegistrationDTO() {
   }
 
@@ -49,13 +51,15 @@ public class UserRegistrationDTO {
                              @NotBlank @Size(min = 1, max = 100) String password,
                              @NotBlank @Size(min = 1, max = 100) String confirmPassword,
                              @NotBlank @Size(min = 2, max = 100) String fullName,
-                             @Email @NotBlank @Size(max = 100) String email) {
+                             @Email @NotBlank @Size(max = 100) String email,
+                             boolean advanced) {
     this.id = id;
     this.username = username;
     this.password = password;
     this.confirmPassword = confirmPassword;
     this.fullName = fullName;
     this.email = email;
+    this.advanced = advanced;
   }
 
   public Integer getId() {
@@ -106,12 +110,21 @@ public class UserRegistrationDTO {
     this.email = email;
   }
 
+  public boolean isAdvanced() {
+    return advanced;
+  }
+
+  public void setAdvanced(boolean advanced) {
+    this.advanced = advanced;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     UserRegistrationDTO that = (UserRegistrationDTO) o;
-    return Objects.equals(id, that.id) &&
+    return advanced == that.advanced &&
+        Objects.equals(id, that.id) &&
         Objects.equals(username, that.username) &&
         Objects.equals(password, that.password) &&
         Objects.equals(confirmPassword, that.confirmPassword) &&
@@ -121,7 +134,7 @@ public class UserRegistrationDTO {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, username, password, confirmPassword, fullName, email);
+    return Objects.hash(id, username, password, confirmPassword, fullName, email, advanced);
   }
 
   @Override
@@ -133,6 +146,7 @@ public class UserRegistrationDTO {
         ", confirmPassword='" + confirmPassword + '\'' +
         ", fullName='" + fullName + '\'' +
         ", email='" + email + '\'' +
+        ", advanced=" + advanced +
         '}';
   }
 }
