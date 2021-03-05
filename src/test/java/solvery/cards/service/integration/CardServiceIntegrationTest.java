@@ -122,6 +122,21 @@ public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest i
 
   @Test
   @Override
+  public void getById() {
+    Card exceptedCard = new Card(4, user, "10", 0, false);
+    Card actualCard = cardService.getById(4);
+    assertThat(actualCard).isEqualToIgnoringGivenFields(exceptedCard, "user");
+  }
+
+  @Test
+  @Override
+  public void getByIdShouldReturnNotFound() {
+    NotFoundException exception = assertThrows(NotFoundException.class, () -> cardService.getById(13));
+    assertEquals(messageSourceAccessor.getMessage("card.cardByIdNotFound"), exception.getMessage());
+  }
+
+  @Test
+  @Override
   public void getEnabledById() {
     Card exceptedCard = new Card(1, user, "11", 0, true);
     Card actualCard = cardService.getEnabledById(1);

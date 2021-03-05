@@ -46,7 +46,7 @@ public class OperationService {
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public Operation create(Operation operation) {
     checkAbilityChangeAndApplyBalance(operation);
     return repository.save(operation);
@@ -61,19 +61,19 @@ public class OperationService {
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public Operation addMoney(Integer cardId, Integer sum) {
     return moveMoneyByCardId(cardId, null, sum);
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public Operation withdrawMoney(Integer cardId, Integer sum) {
     return moveMoneyByCardId(cardId, null, -sum);
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public void transferMoney(Integer cardId, String recipientCardNumb, Integer sum) {
     Card card = cardService.getEnabledById(cardId);
     Card recipientCard = cardService.getEnabledByCardNumb(recipientCardNumb);
@@ -83,7 +83,7 @@ public class OperationService {
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId,
                                      int typeId, LocalDate startDate, LocalDate endDate) {
-    Card card = cardService.getEnabledById(cardId);
+    Card card = cardService.getById(cardId);
 
 //    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
 //        && directionId == 0 && typeId == 0) {

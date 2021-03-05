@@ -1,5 +1,6 @@
 package solvery.cards.service;
 
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,11 +46,26 @@ public class CardCachingTest {
   private final static User user =
       new User(1, "u1", "1", "user1", "user1@a.ru",
           Collections.singleton(Role.USER), true);
+  private final static User advancedUser =
+      new User(4, "au4", "1", "advanced user 4", "auser4@a.ru",
+          Set.of(Role.USER, Role.USER_ADVANCED), true);
 
   private final static List<Card> exceptedCards = List.of(
       new Card(1, user, "11", 0, true),
       new Card(2, user, "12", 0, true),
       new Card(3, user, "13", 0, true)
+  );
+
+  private final static List<Card> exceptedCardsAdvanced = List.of(
+      new Card(9, advancedUser, "41", 0, true),
+      new Card(10, advancedUser, "42", 0, false),
+      new Card(11, advancedUser, "43", 0, true),
+      new Card(12, advancedUser, "44", 0, false)
+  );
+
+  private final static List<Card> exceptedEnabledCardsAdvanced = List.of(
+      new Card(9, advancedUser, "41", 0, true),
+      new Card(11, advancedUser, "43", 0, true)
   );
 
   @Configuration
@@ -68,16 +84,20 @@ public class CardCachingTest {
 
     @Bean
     public CacheManager cacheManager() {
-      return new ConcurrentMapCacheManager("cards");
+      return new ConcurrentMapCacheManager("cards", "cardsEnabled");
     }
   }
 
   @BeforeEach
   void setUp() {
     Objects.requireNonNull(cacheManager.getCache("cards")).clear();
+    Objects.requireNonNull(cacheManager.getCache("cardsEnabled")).clear();
     mock = AopTestUtils.getTargetObject(cardService);
     reset(mock);
     when(mock.getAllByUser(user)).thenReturn(exceptedCards);
+    when(mock.getAllByUser(advancedUser)).thenReturn(exceptedCardsAdvanced);
+    when(mock.getAllEnabledByUser(user)).thenReturn(exceptedCards);
+    when(mock.getAllEnabledByUser(advancedUser)).thenReturn(exceptedEnabledCardsAdvanced);
   }
 
   @Test
@@ -86,6 +106,31 @@ public class CardCachingTest {
     assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
     assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
     verify(mock, times(1)).getAllByUser(user);
+  }
+
+  @Test
+  void getAllEnabledByUser() {
+    assertIterableEquals(exceptedCards, cardService.getAllEnabledByUser(user));
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    assertIterableEquals(exceptedCards, cardService.getAllEnabledByUser(user));
+    verify(mock, times(1)).getAllEnabledByUser(user);
+  }
+
+  @Test
+  void getAllEnabledByUserAdvanced() {
+    assertIterableEquals(exceptedEnabledCardsAdvanced, cardService.getAllEnabledByUser(advancedUser));
+    assertIterableEquals(exceptedEnabledCardsAdvanced, cardService.getAllEnabledByUser(advancedUser));
+    assertIterableEquals(exceptedEnabledCardsAdvanced, cardService.getAllEnabledByUser(advancedUser));
+    verify(mock, times(1)).getAllEnabledByUser(advancedUser);
+  }
+
+  @Test
+  void getAllByAnyUser() {
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    assertIterableEquals(exceptedCardsAdvanced, cardService.getAllByUser(advancedUser));
+    assertIterableEquals(exceptedCards, cardService.getAllByUser(user));
+    verify(mock, times(1)).getAllByUser(user);
+    verify(mock, times(1)).getAllByUser(advancedUser);
   }
 
   @Test

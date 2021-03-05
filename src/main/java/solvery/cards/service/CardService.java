@@ -36,7 +36,7 @@ public class CardService {
       return repository.getAllByUserAndEnabled(user, true);
   }
 
-  @Cacheable(value = "cards")
+  @Cacheable(value = "cardsEnabled")
   public List<Card> getAllEnabledByUser(User user) {
     if (user.getRoles().contains(Role.USER_ADVANCED))
       return getAllByUser(user).stream()
@@ -47,7 +47,7 @@ public class CardService {
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public Card create(Card card) {
     card.setBalance(0);
     card.setEnabled(true);
@@ -55,9 +55,15 @@ public class CardService {
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public void update(Card card) {
     repository.save(card);
+  }
+
+  public Card getById(Integer id) {
+    return repository.findById(id)
+        .orElseThrow(() -> new NotFoundException(
+            messageSourceAccessor.getMessage("card.cardByIdNotFound", LocaleContextHolder.getLocale())));
   }
 
   public Card getEnabledById(Integer id) {
@@ -81,7 +87,7 @@ public class CardService {
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public Card close(Integer id) {
     Card card = getEnabledById(id);
     card.setEnabled(false);
@@ -90,7 +96,7 @@ public class CardService {
   }
 
   @Transactional
-  @CacheEvict(value = "cards", allEntries = true)
+  @CacheEvict(value = {"cards", "cardsEnabled"}, allEntries = true)
   public Card openBack(Integer id) {
     Card card = getDisabledById(id);
     card.setEnabled(true);

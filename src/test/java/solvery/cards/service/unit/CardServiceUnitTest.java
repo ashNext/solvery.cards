@@ -136,6 +136,31 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
 
   @Test
   @Override
+  public void getById() {
+    when(repository.findById(10)).thenReturn(Optional.of(exceptedDisabledCard));
+
+    Card actualCard = service.getById(10);
+
+    assertEquals(exceptedDisabledCard, actualCard);
+    verify(repository, times(1)).findById(10);
+  }
+
+  @Test
+  @Override
+  public void getByIdShouldReturnNotFound() {
+    when(repository.findById(13)).thenReturn(Optional.empty());
+    when(messageSourceAccessor.getMessage(
+        eq("card.cardByIdNotFound"),
+        eq(LocaleContextHolder.getLocale()))
+    ).thenReturn("42");
+
+    NotFoundException exception =
+        assertThrows(NotFoundException.class, () -> service.getById(13));
+    assertEquals("42", exception.getMessage());
+  }
+
+  @Test
+  @Override
   public void getEnabledById() {
     when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.of(exceptedCard));
 

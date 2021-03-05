@@ -16,6 +16,10 @@ public interface CardServiceInterfaceTest {
 
   void close();
 
+  void getById();
+
+  void getByIdShouldReturnNotFound();
+
   void getEnabledById();
 
   void getEnabledByIdShouldReturnNotFound();

@@ -182,14 +182,15 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
     Card card = CARD1;
     List<Operation> operations = OPERATIONS_CARD1;
 
-    when(cardService.getEnabledById(eq(1))).thenReturn(card);
+    when(cardService.getById(eq(1))).thenReturn(card);
     when(repository.findAll(
         any(Specification.class),
         eq(Sort.by(Sort.Direction.DESC, "dateTime")))
     ).thenReturn(operations);
 
     List<Operation> actualOperations =
-        service.getByFilter(card.getId(), null, 0, 0, null, null);
+        service.getByFilter(
+            card.getId(), null, 0, 0, null, null);
 
     assertEquals(operations, actualOperations);
   }

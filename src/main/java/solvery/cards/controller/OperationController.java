@@ -144,7 +144,7 @@ public class OperationController {
       @RequestParam @Nullable LocalDate startDate,
       @RequestParam @Nullable LocalDate endDate,
       Model model) {
-    List<Card> cards = cardService.getAllEnabledByUser(user);
+    List<Card> cards = cardService.getAllByUser(user);
     model.addAttribute("cards", cards);
     model.addAttribute("directionSelected", directionId);
     model.addAttribute("typeSelected", typeId);
