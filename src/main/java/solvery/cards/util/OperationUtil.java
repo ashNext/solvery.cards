@@ -1,7 +1,7 @@
 package solvery.cards.util;
 
 import org.springframework.util.StringUtils;
-import solvery.cards.dto.OperationHistoryTo;
+import solvery.cards.dto.OperationHistoryDTO;
 import solvery.cards.model.Operation;
 
 import java.util.Collection;
@@ -13,13 +13,13 @@ public class OperationUtil {
   private OperationUtil() {
   }
 
-  public static List<OperationHistoryTo> getListOperationHistoryTo(Collection<Operation> operations) {
+  public static List<OperationHistoryDTO> getListOperationHistoryTo(Collection<Operation> operations) {
     return operations.stream()
         .map(OperationUtil::newTo)
         .collect(Collectors.toList());
   }
 
-  private static OperationHistoryTo newTo(Operation o) {
+  private static OperationHistoryDTO newTo(Operation o) {
     final boolean cashReceipts = o.getSum() > 0;
 
     String purposeOfPayment = o.getRecipientCardNumb();
@@ -30,7 +30,7 @@ public class OperationUtil {
       purposeOfPayment = StringUtils.isEmpty(purposeOfPayment) ? "Снятие наличных" : "Перевод на карту \"" + purposeOfPayment + "\"";
     }
 
-    return new OperationHistoryTo(
+    return new OperationHistoryDTO(
         o.getId(), purposeOfPayment, Math.abs(o.getSum()), o.getCardBalance(), o.getDateTime(), cashReceipts);
   }
 }

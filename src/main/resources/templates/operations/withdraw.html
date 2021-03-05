@@ -12,7 +12,7 @@
 
 <div th:if="${not #lists.isEmpty(cards)}" th:with="formname='form-add'">
   <div>
-    <form th:id="${formname}" th:action="@{/operation/withdraw}" th:object="${operationCashTo}" method="post">
+    <form th:id="${formname}" th:action="@{/operation/withdraw}" th:object="${operationCashDTO}" method="post">
 
       <div>
         <label> [[#{card.numb}]]:

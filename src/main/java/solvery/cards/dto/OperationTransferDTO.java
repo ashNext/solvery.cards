@@ -15,7 +15,7 @@ import solvery.cards.validator.card.CheckCardAvailability;
         message = "{operation.noMatchCardNumber}"
     )
 })
-public class OperationTransferTo {
+public class OperationTransferDTO {
 
   private Long id;
 
@@ -33,10 +33,10 @@ public class OperationTransferTo {
   @CheckCardAvailability(message = "{operation.notFoundCardRecipient}")
   private String recipientCardNumb;
 
-  public OperationTransferTo() {
+  public OperationTransferDTO() {
   }
 
-  public OperationTransferTo(
+  public OperationTransferDTO(
       Long id,
       @NotBlank @Size(min = 2, max = 16) String cardNumb,
       @NotNull @Range(min = 1, max = 999999999) Integer sum,

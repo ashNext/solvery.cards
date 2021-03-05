@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import solvery.cards.dto.OperationCashTo;
-import solvery.cards.dto.OperationTransferTo;
+import solvery.cards.dto.OperationCashDTO;
+import solvery.cards.dto.OperationTransferDTO;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
@@ -25,12 +25,12 @@ import java.util.List;
 @RequestMapping("/operation")
 public class OperationController {
 
-  private final OperationService service;
+  private final OperationService operationService;
 
   private final CardService cardService;
 
-  public OperationController(OperationService service, CardService cardService) {
-    this.service = service;
+  public OperationController(OperationService operationService, CardService cardService) {
+    this.operationService = operationService;
     this.cardService = cardService;
   }
 
@@ -62,7 +62,7 @@ public class OperationController {
 
   @GetMapping("/add")
   public String getAddMoney(@AuthenticationPrincipal User user, Model model) {
-    model.addAttribute("operationCashTo", new OperationCashTo());
+    model.addAttribute("operationCashDTO", new OperationCashDTO());
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     return "/operations/add";
   }
@@ -70,20 +70,20 @@ public class OperationController {
   @PostMapping("/add")
   public String addMoney(
       @AuthenticationPrincipal User user,
-      @Valid OperationCashTo operationCashTo,
+      @Valid OperationCashDTO operationCashDTO,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("cards", cardService.getAllEnabledByUser(user));
       return "/operations/add";
     }
-    service.addMoney(operationCashTo.getCard().getId(), operationCashTo.getSum());
+    operationService.addMoney(operationCashDTO.getCard().getId(), operationCashDTO.getSum());
     return "redirect:/operation/result?type=add&status=ok";
   }
 
   @GetMapping("/withdraw")
   public String getWithdrawMoney(@AuthenticationPrincipal User user, Model model) {
-    model.addAttribute("operationCashTo", new OperationCashTo());
+    model.addAttribute("operationCashDTO", new OperationCashDTO());
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     return "/operations/withdraw";
   }
@@ -91,20 +91,20 @@ public class OperationController {
   @PostMapping("/withdraw")
   public String withdrawMoney(
       @AuthenticationPrincipal User user,
-      @Valid OperationCashTo operationCashTo,
+      @Valid OperationCashDTO operationCashDTO,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("cards", cardService.getAllEnabledByUser(user));
       return "/operations/withdraw";
     }
-    service.withdrawMoney(operationCashTo.getCard().getId(), operationCashTo.getSum());
+    operationService.withdrawMoney(operationCashDTO.getCard().getId(), operationCashDTO.getSum());
     return "redirect:/operation/result?type=withdraw&status=ok";
   }
 
   @GetMapping("/transfer")
   public String getTransfer(@AuthenticationPrincipal User user, Model model) {
-    model.addAttribute("operationTransferTo", new OperationTransferTo());
+    model.addAttribute("operationTransferDTO", new OperationTransferDTO());
     model.addAttribute("cards", cardService.getAllEnabledByUser(user));
     return "/operations/transfer";
   }
@@ -112,7 +112,7 @@ public class OperationController {
   @PostMapping("/transfer")
   public String transferMoney(
       @AuthenticationPrincipal User user,
-      @Valid OperationTransferTo operationTransferTo,
+      @Valid OperationTransferDTO operationTransferDTO,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
@@ -120,10 +120,10 @@ public class OperationController {
       return "/operations/transfer";
     }
 
-    service.transferMoney(
-        cardService.getEnabledByCardNumb(operationTransferTo.getCardNumb()).getId(),
-        operationTransferTo.getRecipientCardNumb(),
-        operationTransferTo.getSum());
+    operationService.transferMoney(
+        cardService.getEnabledByCardNumb(operationTransferDTO.getCardNumb()).getId(),
+        operationTransferDTO.getRecipientCardNumb(),
+        operationTransferDTO.getSum());
     return "redirect:/operation/result?type=transfer&status=ok";
   }
 
@@ -150,7 +150,7 @@ public class OperationController {
     if (cardId != null) {
       model.addAttribute("operations",
           OperationUtil.getListOperationHistoryTo(
-              service.getByFilter(cardId, recipientCardNumber, directionId, typeId, startDate, endDate)));
+              operationService.getByFilter(cardId, recipientCardNumber, directionId, typeId, startDate, endDate)));
     }
     return "/operations/history";
   }

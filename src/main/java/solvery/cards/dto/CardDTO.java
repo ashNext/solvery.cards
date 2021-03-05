@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 import solvery.cards.util.CardUtil;
 import solvery.cards.validator.card.UniqueCardNumber;
 
-public class CardTo {
+public class CardDTO {
 
   private Integer id;
 
@@ -15,15 +15,12 @@ public class CardTo {
   @UniqueCardNumber(message = "{card.uniqueCardNumber}")
   private String numb;
 
-  private Integer balance;
-
-  public CardTo() {
+  public CardDTO() {
   }
 
-  public CardTo(Integer id, String numb, Integer balance) {
+  public CardDTO(Integer id, String numb) {
     this.id = id;
     this.numb = numb;
-    this.balance = balance;
   }
 
   public Integer getId() {
@@ -42,14 +39,6 @@ public class CardTo {
     this.numb = numb;
   }
 
-  public Integer getBalance() {
-    return balance;
-  }
-
-  public void setBalance(Integer balance) {
-    this.balance = balance;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -58,15 +47,14 @@ public class CardTo {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CardTo cardTo = (CardTo) o;
-    return Objects.equals(id, cardTo.id) &&
-        Objects.equals(numb, cardTo.numb) &&
-        Objects.equals(balance, cardTo.balance);
+    CardDTO cardDTO = (CardDTO) o;
+    return Objects.equals(id, cardDTO.id) &&
+        Objects.equals(numb, cardDTO.numb);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, numb, balance);
+    return Objects.hash(id, numb);
   }
 
   @Override
@@ -74,7 +62,6 @@ public class CardTo {
     return "CardTo{" +
         "id=" + id +
         ", numb='" + numb + '\'' +
-        ", balance=" + balance +
         '}';
   }
 }

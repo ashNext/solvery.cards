@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import solvery.cards.dto.UserRegistrationTo;
+import solvery.cards.dto.UserRegistrationDTO;
 import solvery.cards.model.Role;
 import solvery.cards.model.User;
 import solvery.cards.service.UserService;
@@ -19,14 +19,14 @@ import java.util.Collections;
 @RequestMapping(value = "/registration")
 public class UserController {
 
-  private final UserService service;
+  private final UserService userService;
 
   private final UniqueUserMailValidator uniqueUserMailValidator;
 
   private final UniqueUserUsernameValidator uniqueUserUsernameValidator;
 
-  public UserController(UserService service, UniqueUserMailValidator uniqueUserMailValidator, UniqueUserUsernameValidator uniqueUserUsernameValidator) {
-    this.service = service;
+  public UserController(UserService userService, UniqueUserMailValidator uniqueUserMailValidator, UniqueUserUsernameValidator uniqueUserUsernameValidator) {
+    this.userService = userService;
     this.uniqueUserMailValidator = uniqueUserMailValidator;
     this.uniqueUserUsernameValidator = uniqueUserUsernameValidator;
   }
@@ -38,24 +38,24 @@ public class UserController {
 
   @GetMapping
   public String registration(Model model) {
-    model.addAttribute("userRegistrationTo", new UserRegistrationTo());
+    model.addAttribute("userRegistrationDTO", new UserRegistrationDTO());
     return "registration";
   }
 
   @PostMapping
-  public String create(@Valid UserRegistrationTo userRegistrationTo, BindingResult bindingResult) {
+  public String create(@Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
     if (bindingResult.hasErrors()){
       return "registration";
     }
 
     User user = new User(
-        userRegistrationTo.getUsername(),
-        userRegistrationTo.getPassword(),
-        userRegistrationTo.getFullName(),
-        userRegistrationTo.getEmail(),
+        userRegistrationDTO.getUsername(),
+        userRegistrationDTO.getPassword(),
+        userRegistrationDTO.getFullName(),
+        userRegistrationDTO.getEmail(),
         Collections.singleton(Role.USER));
 
-    service.create(user);
+    userService.create(user);
     return "redirect:/login";
   }
 }

@@ -2,7 +2,7 @@ package solvery.cards.dto;
 
 import java.time.LocalDateTime;
 
-public class OperationHistoryTo {
+public class OperationHistoryDTO {
 
   private final Long id;
 
@@ -16,7 +16,7 @@ public class OperationHistoryTo {
 
   private final boolean cashReceipts;
 
-  public OperationHistoryTo(Long id, String purposeOfPayment, Integer sum, Integer cardBalance, LocalDateTime dateTime, boolean cashReceipts) {
+  public OperationHistoryDTO(Long id, String purposeOfPayment, Integer sum, Integer cardBalance, LocalDateTime dateTime, boolean cashReceipts) {
     this.id = id;
     this.purposeOfPayment = purposeOfPayment;
     this.sum = sum;

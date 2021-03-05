@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 import solvery.cards.model.Card;
 
-public class OperationCashTo {
+public class OperationCashDTO {
 
   private Long id;
 
@@ -15,10 +15,10 @@ public class OperationCashTo {
   @Range(min = 1, max = 999999999, message = "{operation.sumRange}")
   private Integer sum;
 
-  public OperationCashTo() {
+  public OperationCashDTO() {
   }
 
-  public OperationCashTo(Long id, @NotNull Card card, @NotNull @Range(min = 1, max = 999999999) Integer sum) {
+  public OperationCashDTO(Long id, @NotNull Card card, @NotNull @Range(min = 1, max = 999999999) Integer sum) {
     this.id = id;
     this.card = card;
     this.sum = sum;

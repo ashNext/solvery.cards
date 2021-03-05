@@ -6,7 +6,7 @@
 <body>
 <div th:insert="commons/header :: navigation"></div>
 
-<form th:action="@{/registration}" method="post" th:object="${userRegistrationTo}">
+<form th:action="@{/registration}" method="post" th:object="${userRegistrationDTO}">
   <div>
     <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red; ">Error username</span><br>
     <label> [[#{user.username}]]: <input type="text" th:field="*{username}"/> </label>

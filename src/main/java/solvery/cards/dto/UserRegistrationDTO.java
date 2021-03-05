@@ -16,7 +16,7 @@ import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.E
         message = "{"+EXCEPTION_NO_MATCH_RETYPE_PASSWORD+"}"
     )
 })
-public class UserRegistrationTo {
+public class UserRegistrationDTO {
 
   private Integer id;
 
@@ -41,15 +41,15 @@ public class UserRegistrationTo {
   @Size(max = 100, message = "{user.emailSize}")
   private String email;
 
-  public UserRegistrationTo() {
+  public UserRegistrationDTO() {
   }
 
-  public UserRegistrationTo(Integer id,
-      @NotBlank @Size(min = 2, max = 100) String username,
-      @NotBlank @Size(min = 1, max = 100) String password,
-      @NotBlank @Size(min = 1, max = 100) String confirmPassword,
-      @NotBlank @Size(min = 2, max = 100) String fullName,
-      @Email @NotBlank @Size(max = 100) String email) {
+  public UserRegistrationDTO(Integer id,
+                             @NotBlank @Size(min = 2, max = 100) String username,
+                             @NotBlank @Size(min = 1, max = 100) String password,
+                             @NotBlank @Size(min = 1, max = 100) String confirmPassword,
+                             @NotBlank @Size(min = 2, max = 100) String fullName,
+                             @Email @NotBlank @Size(max = 100) String email) {
     this.id = id;
     this.username = username;
     this.password = password;
@@ -110,7 +110,7 @@ public class UserRegistrationTo {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    UserRegistrationTo that = (UserRegistrationTo) o;
+    UserRegistrationDTO that = (UserRegistrationDTO) o;
     return Objects.equals(id, that.id) &&
         Objects.equals(username, that.username) &&
         Objects.equals(password, that.password) &&
@@ -126,7 +126,7 @@ public class UserRegistrationTo {
 
   @Override
   public String toString() {
-    return "UserRegistrationTo{" +
+    return "UserRegistrationDTO{" +
         "id=" + id +
         ", username='" + username + '\'' +
         ", password='" + password + '\'' +

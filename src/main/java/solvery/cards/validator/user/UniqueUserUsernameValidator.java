@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler;
-import solvery.cards.dto.UserRegistrationTo;
+import solvery.cards.dto.UserRegistrationDTO;
 import solvery.cards.model.User;
 
 @Component
@@ -13,7 +13,7 @@ public class UniqueUserUsernameValidator extends AbstractUserValidator {
   @Override
   @Transactional
   public void validate(Object o, Errors errors) {
-    UserRegistrationTo userTo = (UserRegistrationTo) o;
+    UserRegistrationDTO userTo = (UserRegistrationDTO) o;
     User user = repository.findByUsername(userTo.getUsername().toLowerCase());
 
     if (user != null) {

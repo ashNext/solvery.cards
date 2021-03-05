@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
-import solvery.cards.dto.CardTo;
+import solvery.cards.dto.CardDTO;
 import solvery.cards.model.Card;
 import solvery.cards.service.CardService;
 
@@ -50,7 +50,7 @@ class CardControllerTest extends AbstractControllerTest {
         .andExpect(authenticated().withUsername("u1"))
         .andExpect(status().isOk())
         .andExpect(view().name("card"))
-        .andExpect(model().attribute("cardTo", equalTo(new CardTo())))
+        .andExpect(model().attribute("cardDTO", equalTo(new CardDTO())))
         .andExpect(content().string(containsString("Cards")))
         .andExpect(xpath("//div[@id='card-list']/table/tbody/tr").nodeCount(3))
         .andExpect(xpath("//div[@id='card-list']/table/tbody/tr[@id='card-list-1']/td[text()='11']")
@@ -76,7 +76,7 @@ class CardControllerTest extends AbstractControllerTest {
         .andExpect(status().isOk())
         .andExpect(view().name("card"))
         .andExpect(model().attribute("cards", empty()))
-        .andExpect(model().attribute("cardTo", equalTo(new CardTo())))
+        .andExpect(model().attribute("cardDTO", equalTo(new CardDTO())))
         .andExpect(content().string(containsString("Cards")))
         .andExpect(xpath("//div[@id='card-list']").doesNotExist());
   }
@@ -111,7 +111,7 @@ class CardControllerTest extends AbstractControllerTest {
         .andExpect(authenticated().withUsername("u1"))
         .andExpect(status().isOk())
         .andExpect(view().name("card"))
-        .andExpect(model().attributeHasFieldErrorCode("cardTo", "numb", "UniqueCardNumber"))
+        .andExpect(model().attributeHasFieldErrorCode("cardDTO", "numb", "UniqueCardNumber"))
         .andExpect(content().string(containsString(getMessage(EXCEPTION_DUPLICATE_CARD))));
   }
 

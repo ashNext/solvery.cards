@@ -3,7 +3,7 @@ package solvery.cards.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import solvery.cards.dto.UserRegistrationTo;
+import solvery.cards.dto.UserRegistrationDTO;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,7 +24,7 @@ class UserControllerTest extends AbstractControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(view().name("registration"))
-        .andExpect(model().attribute("userRegistrationTo", equalTo(new UserRegistrationTo())))
+        .andExpect(model().attribute("userRegistrationDTO", equalTo(new UserRegistrationDTO())))
         .andExpect(content().string(containsString("Registration")));
   }
 

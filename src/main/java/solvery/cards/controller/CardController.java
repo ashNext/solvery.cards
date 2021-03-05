@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import solvery.cards.dto.CardTo;
+import solvery.cards.dto.CardDTO;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
@@ -19,37 +19,37 @@ import javax.validation.Valid;
 @RequestMapping(value = "/card")
 public class CardController {
 
-  private final CardService service;
+  private final CardService cardService;
 
-  public CardController(CardService service) {
-    this.service = service;
+  public CardController(CardService cardService) {
+    this.cardService = cardService;
   }
 
   @GetMapping
   public String getAllEnabled(@AuthenticationPrincipal User user, Model model) {
-    model.addAttribute("cards", service.getAllEnabledByUser(user));
-    model.addAttribute("cardTo", new CardTo());
+    model.addAttribute("cards", cardService.getAllEnabledByUser(user));
+    model.addAttribute("cardDTO", new CardDTO());
     return "card";
   }
 
   @PostMapping
   public String create(
       @AuthenticationPrincipal User user,
-      @Valid CardTo cardTo,
+      @Valid CardDTO cardDTO,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("cards", service.getAllEnabledByUser(user));
+      model.addAttribute("cards", cardService.getAllEnabledByUser(user));
       return "card";
     }
 
-    service.create(new Card(user, cardTo.getNumb()));
+    cardService.create(new Card(user, cardDTO.getNumb()));
     return "redirect:/card";
   }
 
   @PostMapping("/{id}/close")
   public String close(@PathVariable Integer id) {
-    service.close(id);
+    cardService.close(id);
     return "redirect:/card";
   }
 }

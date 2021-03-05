@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import solvery.cards.dto.UserRegistrationTo;
+import solvery.cards.dto.UserRegistrationDTO;
 import solvery.cards.repository.UserRepository;
 
 public abstract class AbstractUserValidator implements Validator {
@@ -17,7 +17,7 @@ public abstract class AbstractUserValidator implements Validator {
 
   @Override
   public boolean supports(Class<?> aClass) {
-    return UserRegistrationTo.class.isAssignableFrom(aClass);
+    return UserRegistrationDTO.class.isAssignableFrom(aClass);
   }
 
   @Override
