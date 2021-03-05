@@ -1,5 +1,25 @@
 package solvery.cards.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
+import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.EXCEPTION_DUPLICATE_CARD;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,20 +29,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import solvery.cards.dto.CardDTO;
 import solvery.cards.model.Card;
 import solvery.cards.service.CardService;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static solvery.cards.controller.ExceptionHandlers.ErrorExceptionHandler.EXCEPTION_DUPLICATE_CARD;
 
 @WithUserDetails(value = "u1")
 @Sql(
@@ -40,7 +46,7 @@ class CardControllerTest extends AbstractControllerTest {
   );
 
   @Autowired
-  private CardService service;
+  private CardService cardService;
 
   @Test
   @SuppressWarnings(value = "unchecked")
@@ -95,7 +101,7 @@ class CardControllerTest extends AbstractControllerTest {
         .andExpect(redirectedUrl("/card"))
         .andExpect(view().name("redirect:/card"));
 
-    Card actualCard = service.getEnabledByCardNumb("100");
+    Card actualCard = cardService.getEnabledByCardNumb("100");
     assertThat(actualCard).usingRecursiveComparison().ignoringFields("user.password")
         .isEqualTo(exceptedCard);
   }
@@ -130,8 +136,42 @@ class CardControllerTest extends AbstractControllerTest {
         .filter(card -> card.getId() != 2)
         .collect(Collectors.toList());
 
-    assertThat(service.getAllByUser(user1)).usingRecursiveComparison()
+    assertThat(cardService.getAllByUser(user1)).usingRecursiveComparison()
         .ignoringFields("user.password")
         .isEqualTo(enabledCards);
+  }
+
+  @Test
+  @WithUserDetails(value = "au4")
+  void openBack() throws Exception {
+    List<Card> exceptedCardsUser4 = List.of(
+        new Card(9, user4, "41", 0, true),
+        new Card(10, user4, "42", 0, true),
+        new Card(11, user4, "43", 0, true),
+        new Card(12, user4, "44", 0, false)
+    );
+
+    mockMvc.perform(post("/card/10/open")
+        .with(csrf())
+    )
+        .andDo(print())
+        .andExpect(authenticated().withUsername("au4"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/card"))
+        .andExpect(view().name("redirect:/card"));
+
+    assertThat(cardService.getAllByUser(user4)).usingRecursiveComparison()
+        .ignoringFields("user.password")
+        .isEqualTo(exceptedCardsUser4);
+  }
+
+  @Test
+  void openBackForbidden() throws Exception {
+    mockMvc.perform(post("/card/4/open")
+        .with(csrf())
+    )
+        .andDo(print())
+        .andExpect(authenticated().withUsername("u1"))
+        .andExpect(status().isForbidden());
   }
 }

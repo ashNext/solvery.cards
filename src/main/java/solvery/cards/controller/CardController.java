@@ -1,5 +1,6 @@
 package solvery.cards.controller;
 
+import javax.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +13,6 @@ import solvery.cards.dto.CardDTO;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
-
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping(value = "/card")
@@ -50,6 +49,12 @@ public class CardController {
   @PostMapping("/{id}/close")
   public String close(@PathVariable Integer id) {
     cardService.close(id);
+    return "redirect:/card";
+  }
+
+  @PostMapping("/{id}/open")
+  public String openBack(@PathVariable Integer id) {
+    cardService.openBack(id);
     return "redirect:/card";
   }
 }
