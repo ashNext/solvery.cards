@@ -1,22 +1,25 @@
 package solvery.cards.service.unit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import solvery.cards.model.Card;
 import solvery.cards.repository.CardRepository;
 import solvery.cards.service.CardService;
 import solvery.cards.service.CardServiceInterfaceTest;
 import solvery.cards.util.exception.NotFoundException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class CardServiceUnitTest extends AbstractServiceUnitTest implements CardServiceInterfaceTest {
 
@@ -149,14 +152,11 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
   @Override
   public void getByIdShouldReturnNotFound() {
     when(repository.findById(13)).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage(
-        eq("card.cardByIdNotFound"),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> service.getById(13));
-    assertEquals("42", exception.getMessage());
+
+    assertEquals("card.cardByIdNotFound", exception.getMsgCode());
   }
 
   @Test
@@ -174,14 +174,11 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
   @Override
   public void getEnabledByIdShouldReturnNotFound() {
     when(repository.findByIdAndEnabledTrue(1)).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage(
-        eq("card.cardByIdNotFound"),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> service.getEnabledById(1));
-    assertEquals("42", exception.getMessage());
+
+    assertEquals("card.cardByIdNotFound", exception.getMsgCode());
   }
 
   @Test
@@ -199,15 +196,12 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
   @Override
   public void getEnabledByCardNumbShouldReturnNotFound() {
     when(repository.findByNumbAndEnabledTrue("11")).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage(
-        eq("card.numbNotFound"),
-        eq(new Object[]{"11"}),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> service.getEnabledByCardNumb("11"));
-    assertEquals("42", exception.getMessage());
+
+    assertEquals("card.numbNotFound", exception.getMsgCode());
+    assertEquals("11", exception.getArgs()[0]);
   }
 
   @Test
@@ -241,13 +235,10 @@ class CardServiceUnitTest extends AbstractServiceUnitTest implements CardService
   @Override
   public void getDisabledByIdShouldReturnNotFound() {
     when(repository.findByIdAndEnabledFalse(1)).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage(
-        eq("card.cardByIdNotFound"),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> service.getDisabledById(1));
-    assertEquals("42", exception.getMessage());
+
+    assertEquals("card.cardByIdNotFound", exception.getMsgCode());
   }
 }

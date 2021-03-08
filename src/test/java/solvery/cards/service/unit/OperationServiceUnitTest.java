@@ -1,9 +1,22 @@
 package solvery.cards.service.unit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static solvery.cards.OperationTestData.CARD1;
+import static solvery.cards.OperationTestData.OPERATIONS_CARD1;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import solvery.cards.model.Card;
@@ -15,17 +28,8 @@ import solvery.cards.service.OperationServiceInterfaceTest;
 import solvery.cards.util.exception.BalanceOutRangeException;
 import solvery.cards.util.exception.NotFoundException;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-import static solvery.cards.OperationTestData.CARD1;
-import static solvery.cards.OperationTestData.OPERATIONS_CARD1;
-
-class OperationServiceUnitTest extends AbstractServiceUnitTest implements OperationServiceInterfaceTest {
+class OperationServiceUnitTest extends AbstractServiceUnitTest implements
+    OperationServiceInterfaceTest {
 
   @Mock
   private OperationRepository repository;
@@ -58,13 +62,9 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
   @Override
   public void getShouldReturnMotFound() {
     when(repository.findById(1L)).thenReturn(Optional.empty());
-    when(messageSourceAccessor.getMessage(
-        eq("operation.notFound"),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     NotFoundException exception = assertThrows(NotFoundException.class, () -> service.get(1L));
-    assertEquals("42", exception.getMessage());
+    assertEquals("operation.notFound", exception.getMsgCode());
   }
 
   @Test
@@ -109,16 +109,12 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
     Card actualCard = new Card(1, exceptedUser, "11", 2000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
-    when(messageSourceAccessor.getMessage(
-        eq("operation.over.balance"),
-        eq(new Object[]{"11"}),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     BalanceOutRangeException exception = assertThrows(
         BalanceOutRangeException.class,
-        () -> service.addMoney(actualCard.getId(), 999999900), "42");
-    assertEquals("42", exception.getMessage());
+        () -> service.addMoney(actualCard.getId(), 999999900));
+    assertEquals("operation.over.balance", exception.getMsgCode());
+    assertEquals(actualCard.getNumb(), exception.getArgs()[0]);
     verify(repository, times(0)).save(any());
     verifyNoMoreInteractions(repository);
   }
@@ -145,17 +141,13 @@ class OperationServiceUnitTest extends AbstractServiceUnitTest implements Operat
     Card actualCard = new Card(1, exceptedUser, "11", 5000, true);
 
     when(cardService.getEnabledById(eq(1))).thenReturn(actualCard);
-    when(messageSourceAccessor.getMessage(
-        eq("operation.lower.balance"),
-        eq(new Object[]{"11"}),
-        eq(LocaleContextHolder.getLocale()))
-    ).thenReturn("42");
 
     BalanceOutRangeException exception = assertThrows(
         BalanceOutRangeException.class,
         () -> service.withdrawMoney(actualCard.getId(), 999999900));
 
-    assertEquals("42", exception.getMessage());
+    assertEquals("operation.lower.balance", exception.getMsgCode());
+    assertEquals(actualCard.getNumb(), exception.getArgs()[0]);
     verify(repository, times(0)).save(any());
     verifyNoMoreInteractions(repository);
   }

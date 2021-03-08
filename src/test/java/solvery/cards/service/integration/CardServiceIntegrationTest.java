@@ -1,5 +1,13 @@
 package solvery.cards.service.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,22 +19,14 @@ import solvery.cards.service.CardService;
 import solvery.cards.service.CardServiceInterfaceTest;
 import solvery.cards.util.exception.NotFoundException;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @Sql(
     value = {"/create-users-before.sql", "/create-cards-before.sql"},
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(
     value = {"/create-cards-after.sql", "/create-users-after.sql"},
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest implements CardServiceInterfaceTest {
+public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest implements
+    CardServiceInterfaceTest {
 
   @Autowired
   private CardService cardService;
@@ -131,8 +131,9 @@ public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest i
   @Test
   @Override
   public void getByIdShouldReturnNotFound() {
-    NotFoundException exception = assertThrows(NotFoundException.class, () -> cardService.getById(13));
-    assertEquals(messageSourceAccessor.getMessage("card.cardByIdNotFound"), exception.getMessage());
+    NotFoundException exception = assertThrows(NotFoundException.class,
+        () -> cardService.getById(13));
+    assertEquals("card.cardByIdNotFound", exception.getMsgCode());
   }
 
   @Test
@@ -146,8 +147,9 @@ public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest i
   @Test
   @Override
   public void getEnabledByIdShouldReturnNotFound() {
-    NotFoundException exception = assertThrows(NotFoundException.class, () -> cardService.getEnabledById(13));
-    assertEquals(messageSourceAccessor.getMessage("card.cardByIdNotFound"), exception.getMessage());
+    NotFoundException exception = assertThrows(NotFoundException.class,
+        () -> cardService.getEnabledById(13));
+    assertEquals("card.cardByIdNotFound", exception.getMsgCode());
   }
 
   @Test
@@ -161,8 +163,11 @@ public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest i
   @Test
   @Override
   public void getEnabledByCardNumbShouldReturnNotFound() {
-    NotFoundException exception = assertThrows(NotFoundException.class, () -> cardService.getEnabledByCardNumb("14"));
-    assertEquals(messageSourceAccessor.getMessage("card.numbNotFound", new Object[]{"14"}), exception.getMessage());
+    NotFoundException exception = assertThrows(NotFoundException.class,
+        () -> cardService.getEnabledByCardNumb("14"));
+    assertEquals("card.numbNotFound", exception.getMsgCode());
+    assertEquals("14", exception.getArgs()[0]);
+
   }
 
   @Test
@@ -184,7 +189,8 @@ public class CardServiceIntegrationTest extends AbstractServiceIntegrationTest i
   @Test
   @Override
   public void getDisabledByIdShouldReturnNotFound() {
-    NotFoundException exception = assertThrows(NotFoundException.class, () -> cardService.getDisabledById(1));
-    assertThat(exception.getMessage()).isEqualTo(messageSourceAccessor.getMessage("card.cardByIdNotFound"));
+    NotFoundException exception = assertThrows(NotFoundException.class,
+        () -> cardService.getDisabledById(1));
+    assertThat(exception.getMsgCode()).isEqualTo("card.cardByIdNotFound");
   }
 }

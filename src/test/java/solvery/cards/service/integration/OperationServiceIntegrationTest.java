@@ -1,5 +1,31 @@
 package solvery.cards.service.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static solvery.cards.OperationTestData.CARD1;
+import static solvery.cards.OperationTestData.CARD2;
+import static solvery.cards.OperationTestData.CARD3;
+import static solvery.cards.OperationTestData.CARD_NUMB_NOT_FOUND;
+import static solvery.cards.OperationTestData.OPERATION1_CARD1;
+import static solvery.cards.OperationTestData.OPERATION1_NOT_CREATED_ID;
+import static solvery.cards.OperationTestData.OPERATION2_NOT_CREATED_ID;
+import static solvery.cards.OperationTestData.OPERATION3_CARD1;
+import static solvery.cards.OperationTestData.OPERATIONS_CARD1;
+import static solvery.cards.OperationTestData.OPERATION_DEPOSIT_CARD1;
+import static solvery.cards.OperationTestData.OPERATION_MATCHER;
+import static solvery.cards.OperationTestData.OPERATION_NOT_FOUND_ID;
+import static solvery.cards.OperationTestData.OPERATION_TRANSFER_FROM_CARD1;
+import static solvery.cards.OperationTestData.OPERATION_TRANSFER_TO_CARD2;
+import static solvery.cards.OperationTestData.OPERATION_WITHDRAW_CARD1;
+import static solvery.cards.OperationTestData.SUM_LOWER_BALANCE_CARD1;
+import static solvery.cards.OperationTestData.SUM_OVER_BALANCE_CARD1;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -11,25 +37,16 @@ import solvery.cards.service.OperationServiceInterfaceTest;
 import solvery.cards.util.exception.BalanceOutRangeException;
 import solvery.cards.util.exception.NotFoundException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static solvery.cards.OperationTestData.*;
-
 @Sql(
-    value = {"/create-users-before.sql", "/create-cards-before.sql", "/create-operations-before.sql"},
+    value = {"/create-users-before.sql", "/create-cards-before.sql",
+        "/create-operations-before.sql"},
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(
     value = {"/create-cards-after.sql", "/create-users-after.sql", "/create-operations-after.sql"},
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 //@Transactional
-public class OperationServiceIntegrationTest extends AbstractServiceIntegrationTest implements OperationServiceInterfaceTest {
+public class OperationServiceIntegrationTest extends AbstractServiceIntegrationTest implements
+    OperationServiceInterfaceTest {
 
   @Autowired
   private OperationService operationService;
@@ -42,7 +59,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   public void get() {
     Operation actualOperation = operationService.get(OPERATION1_CARD1.getId());
 
-    assertThat(actualOperation).usingRecursiveComparison().ignoringFields("card").isEqualTo(OPERATION1_CARD1);
+    assertThat(actualOperation).usingRecursiveComparison().ignoringFields("card")
+        .isEqualTo(OPERATION1_CARD1);
   }
 
   @Test
@@ -50,7 +68,7 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   public void getShouldReturnMotFound() {
     NotFoundException exception =
         assertThrows(NotFoundException.class, () -> operationService.get(OPERATION_NOT_FOUND_ID));
-    assertEquals(messageSourceAccessor.getMessage("operation.notFound"), exception.getMessage());
+    assertEquals("operation.notFound", exception.getMsgCode());
   }
 
   @Test
@@ -61,7 +79,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
     exceptedOperation.setDateTime(now);
     Operation actualOperation =
         operationService.create(
-            new Operation(cardService.getEnabledById(CARD1.getId()), OPERATION_DEPOSIT_CARD1.getSum(), now));
+            new Operation(cardService.getEnabledById(CARD1.getId()),
+                OPERATION_DEPOSIT_CARD1.getSum(), now));
     Operation createdOperation = operationService.get(OPERATION_DEPOSIT_CARD1.getId());
 
     OPERATION_MATCHER.assertMatch(actualOperation, exceptedOperation);
@@ -74,7 +93,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   @Override
   public void addMoney() {
     Operation exceptedOperation = OPERATION_DEPOSIT_CARD1;
-    Operation actualOperation = operationService.addMoney(CARD1.getId(), OPERATION_DEPOSIT_CARD1.getSum());
+    Operation actualOperation = operationService
+        .addMoney(CARD1.getId(), OPERATION_DEPOSIT_CARD1.getSum());
     Operation addedOperation = operationService.get(OPERATION_DEPOSIT_CARD1.getId());
     exceptedOperation.setDateTime(addedOperation.getDateTime());
 
@@ -90,9 +110,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
     BalanceOutRangeException exception =
         assertThrows(BalanceOutRangeException.class,
             () -> operationService.addMoney(CARD1.getId(), SUM_OVER_BALANCE_CARD1));
-    assertEquals(
-        messageSourceAccessor.getMessage("operation.over.balance", new Object[]{CARD1.getNumb()}),
-        exception.getMessage());
+    assertEquals("operation.over.balance", exception.getMsgCode());
+    assertEquals(CARD1.getNumb(), exception.getArgs()[0]);
     assertEquals(CARD1.getBalance(), cardService.getEnabledById(CARD1.getId()).getBalance());
     assertThrows(NotFoundException.class, () -> operationService.get(OPERATION1_NOT_CREATED_ID));
   }
@@ -101,7 +120,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   @Override
   public void withdrawMoney() {
     Operation exceptedOperation = OPERATION_WITHDRAW_CARD1;
-    Operation actualOperation = operationService.withdrawMoney(CARD1.getId(), -OPERATION_WITHDRAW_CARD1.getSum());
+    Operation actualOperation = operationService
+        .withdrawMoney(CARD1.getId(), -OPERATION_WITHDRAW_CARD1.getSum());
     Operation withdrawnOperation = operationService.get(OPERATION_WITHDRAW_CARD1.getId());
 
     OPERATION_MATCHER.assertMatch(actualOperation, exceptedOperation);
@@ -116,9 +136,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
     BalanceOutRangeException exception =
         assertThrows(BalanceOutRangeException.class,
             () -> operationService.withdrawMoney(CARD1.getId(), SUM_LOWER_BALANCE_CARD1));
-    assertEquals(
-        messageSourceAccessor.getMessage("operation.lower.balance", new Object[]{CARD1.getNumb()}),
-        exception.getMessage());
+    assertEquals("operation.lower.balance", exception.getMsgCode());
+    assertEquals(CARD1.getNumb(), exception.getArgs()[0]);
     assertEquals(CARD1.getBalance(), cardService.getEnabledById(CARD1.getId()).getBalance());
     assertThrows(NotFoundException.class, () -> operationService.get(OPERATION1_NOT_CREATED_ID));
   }
@@ -126,7 +145,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   @Test
   @Override
   public void transferMoney() {
-    operationService.transferMoney(CARD1.getId(), CARD2.getNumb(), OPERATION_TRANSFER_TO_CARD2.getSum());
+    operationService
+        .transferMoney(CARD1.getId(), CARD2.getNumb(), OPERATION_TRANSFER_TO_CARD2.getSum());
     Operation actualSenderOperation = operationService.get(OPERATION_TRANSFER_FROM_CARD1.getId());
     Operation actualRecipientOperation = operationService.get(OPERATION_TRANSFER_TO_CARD2.getId());
 
@@ -142,10 +162,10 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   public void transferMoneyShouldReturnBalanceOutRangeOnOverBalance() {
     BalanceOutRangeException exception =
         assertThrows(BalanceOutRangeException.class,
-            () -> operationService.transferMoney(CARD3.getId(), CARD2.getNumb(), SUM_OVER_BALANCE_CARD1));
-    assertEquals(
-        messageSourceAccessor.getMessage("operation.over.balance", new Object[]{CARD2.getNumb()}),
-        exception.getMessage());
+            () -> operationService
+                .transferMoney(CARD3.getId(), CARD2.getNumb(), SUM_OVER_BALANCE_CARD1));
+    assertEquals("operation.over.balance", exception.getMsgCode());
+    assertEquals(CARD2.getNumb(), exception.getArgs()[0]);
     assertEquals(CARD2.getBalance(), cardService.getEnabledById(CARD2.getId()).getBalance());
     assertEquals(CARD3.getBalance(), cardService.getEnabledById(CARD3.getId()).getBalance());
     assertThrows(NotFoundException.class, () -> operationService.get(OPERATION1_NOT_CREATED_ID));
@@ -156,10 +176,10 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
   public void transferMoneyShouldReturnBalanceOutRangeOnLowerBalance() {
     BalanceOutRangeException exception =
         assertThrows(BalanceOutRangeException.class,
-            () -> operationService.transferMoney(CARD1.getId(), CARD2.getNumb(), SUM_LOWER_BALANCE_CARD1));
-    assertEquals(
-        messageSourceAccessor.getMessage("operation.lower.balance", new Object[]{CARD1.getNumb()}),
-        exception.getMessage());
+            () -> operationService
+                .transferMoney(CARD1.getId(), CARD2.getNumb(), SUM_LOWER_BALANCE_CARD1));
+    assertEquals("operation.lower.balance", exception.getMsgCode());
+    assertEquals(CARD1.getNumb(), exception.getArgs()[0]);
     assertEquals(CARD1.getBalance(), cardService.getEnabledById(CARD1.getId()).getBalance());
     assertEquals(CARD2.getBalance(), cardService.getEnabledById(CARD2.getId()).getBalance());
     assertThrows(NotFoundException.class, () -> operationService.get(OPERATION1_NOT_CREATED_ID));
@@ -171,8 +191,8 @@ public class OperationServiceIntegrationTest extends AbstractServiceIntegrationT
     NotFoundException exception =
         assertThrows(NotFoundException.class,
             () -> operationService.transferMoney(CARD1.getId(), CARD_NUMB_NOT_FOUND, 1000));
-    assertEquals(messageSourceAccessor.getMessage("card.numbNotFound", new Object[]{CARD_NUMB_NOT_FOUND}),
-        exception.getMessage());
+    assertEquals("card.numbNotFound", exception.getMsgCode());
+    assertEquals(CARD_NUMB_NOT_FOUND, exception.getArgs()[0]);
     assertEquals(CARD1.getBalance(), cardService.getEnabledById(CARD1.getId()).getBalance());
     assertThrows(NotFoundException.class, () -> operationService.get(OPERATION1_NOT_CREATED_ID));
     assertThrows(NotFoundException.class, () -> operationService.get(OPERATION2_NOT_CREATED_ID));

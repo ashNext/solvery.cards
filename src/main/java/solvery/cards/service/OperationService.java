@@ -1,8 +1,16 @@
 package solvery.cards.service;
 
+import static solvery.cards.util.specification.OperationSpecification.fromDate;
+import static solvery.cards.util.specification.OperationSpecification.toDate;
+import static solvery.cards.util.specification.OperationSpecification.withCard;
+import static solvery.cards.util.specification.OperationSpecification.withDirection;
+import static solvery.cards.util.specification.OperationSpecification.withRecipient;
+import static solvery.cards.util.specification.OperationSpecification.withType;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -15,12 +23,6 @@ import solvery.cards.util.CardUtil;
 import solvery.cards.util.exception.BalanceOutRangeException;
 import solvery.cards.util.exception.NotFoundException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static solvery.cards.util.specification.OperationSpecification.*;
-
 @Service
 @Transactional(readOnly = true)
 public class OperationService {
@@ -29,20 +31,14 @@ public class OperationService {
 
   private final CardService cardService;
 
-  private final MessageSourceAccessor messageSourceAccessor;
-
-  public OperationService(OperationRepository repository,
-                          CardService cardService,
-                          MessageSourceAccessor messageSourceAccessor) {
+  public OperationService(OperationRepository repository, CardService cardService) {
     this.repository = repository;
     this.cardService = cardService;
-    this.messageSourceAccessor = messageSourceAccessor;
   }
 
   public Operation get(long id) {
     return repository.findById(id)
-        .orElseThrow(() -> new NotFoundException(
-            messageSourceAccessor.getMessage("operation.notFound", LocaleContextHolder.getLocale())));
+        .orElseThrow(() -> new NotFoundException("operation.notFound"));
   }
 
   @Transactional
@@ -82,7 +78,7 @@ public class OperationService {
   }
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId,
-                                     int typeId, LocalDate startDate, LocalDate endDate) {
+      int typeId, LocalDate startDate, LocalDate endDate) {
     Card card = cardService.getById(cardId);
 
 //    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
@@ -109,19 +105,11 @@ public class OperationService {
     int newBalance = operation.getCard().getBalance() + operation.getSum();
 
     if (newBalance > CardUtil.MAX_BALANCE) {
-      throw new BalanceOutRangeException(
-          messageSourceAccessor
-              .getMessage("operation.over.balance",
-                  new Object[]{operation.getCard().getNumb()},
-                  LocaleContextHolder.getLocale()));
+      throw new BalanceOutRangeException("operation.over.balance", operation.getCard().getNumb());
     }
 
     if (newBalance < CardUtil.MIN_BALANCE) {
-      throw new BalanceOutRangeException(
-          messageSourceAccessor
-              .getMessage("operation.lower.balance",
-                  new Object[]{operation.getCard().getNumb()},
-                  LocaleContextHolder.getLocale()));
+      throw new BalanceOutRangeException("operation.lower.balance", operation.getCard().getNumb());
     }
 
 //    operation.getCard().setBalance(newBalance);
