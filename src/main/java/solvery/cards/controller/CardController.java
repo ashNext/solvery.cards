@@ -1,6 +1,8 @@
 package solvery.cards.controller;
 
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,8 @@ import solvery.cards.service.CardService;
 @RequestMapping(value = "/card")
 public class CardController {
 
+  private final Logger logger = LoggerFactory.getLogger(getClass());
+
   private final CardService cardService;
 
   public CardController(CardService cardService) {
@@ -26,6 +30,7 @@ public class CardController {
 
   @GetMapping
   public String getAllEnabled(@AuthenticationPrincipal User user, Model model) {
+    logger.info("getAll cards for user {}", user.getUsername());
     model.addAttribute("cards", cardService.getAllByUser(user));
     model.addAttribute("cardDTO", new CardDTO());
     return "card";
@@ -41,19 +46,22 @@ public class CardController {
       model.addAttribute("cards", cardService.getAllByUser(user));
       return "card";
     }
-
-    cardService.create(new Card(user, cardDTO.getNumb()));
+    Card card = new Card(user, cardDTO.getNumb());
+    logger.info("create card {} for user {}", card, user.getUsername());
+    cardService.create(card);
     return "redirect:/card";
   }
 
   @PostMapping("/{id}/close")
   public String close(@PathVariable Integer id) {
+    logger.info("close cardId {}", id);
     cardService.close(id);
     return "redirect:/card";
   }
 
   @PostMapping("/{id}/open")
   public String openBack(@PathVariable Integer id) {
+    logger.info("openBack cardId {}", id);
     cardService.openBack(id);
     return "redirect:/card";
   }
