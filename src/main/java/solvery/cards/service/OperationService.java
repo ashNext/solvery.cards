@@ -1,15 +1,5 @@
 package solvery.cards.service;
 
-import static solvery.cards.util.specification.OperationSpecification.fromDate;
-import static solvery.cards.util.specification.OperationSpecification.toDate;
-import static solvery.cards.util.specification.OperationSpecification.withCard;
-import static solvery.cards.util.specification.OperationSpecification.withDirection;
-import static solvery.cards.util.specification.OperationSpecification.withRecipient;
-import static solvery.cards.util.specification.OperationSpecification.withType;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,8 +10,15 @@ import solvery.cards.model.Card;
 import solvery.cards.model.Operation;
 import solvery.cards.repository.OperationRepository;
 import solvery.cards.util.CardUtil;
-import solvery.cards.util.exception.BalanceOutRangeException;
-import solvery.cards.util.exception.NotFoundException;
+import solvery.cards.util.exception.BalanceNegativeException;
+import solvery.cards.util.exception.BalanceOverLimitException;
+import solvery.cards.util.exception.NotFoundOperationByIdException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static solvery.cards.util.specification.OperationSpecification.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,7 +35,7 @@ public class OperationService {
 
   public Operation get(long id) {
     return repository.findById(id)
-        .orElseThrow(() -> new NotFoundException("operation.notFound"));
+        .orElseThrow(NotFoundOperationByIdException::new);
   }
 
   @Transactional
@@ -78,7 +75,7 @@ public class OperationService {
   }
 
   public List<Operation> getByFilter(Integer cardId, String recipientCardNumb, int directionId,
-      int typeId, LocalDate startDate, LocalDate endDate) {
+                                     int typeId, LocalDate startDate, LocalDate endDate) {
     Card card = cardService.getById(cardId);
 
 //    if (!StringUtils.hasText(recipientCardNumb) && startDate == null && endDate == null
@@ -105,11 +102,11 @@ public class OperationService {
     int newBalance = operation.getCard().getBalance() + operation.getSum();
 
     if (newBalance > CardUtil.MAX_BALANCE) {
-      throw new BalanceOutRangeException("operation.over.balance", operation.getCard().getNumb());
+      throw new BalanceOverLimitException(operation.getCard().getNumb());
     }
 
     if (newBalance < CardUtil.MIN_BALANCE) {
-      throw new BalanceOutRangeException("operation.lower.balance", operation.getCard().getNumb());
+      throw new BalanceNegativeException(operation.getCard().getNumb());
     }
 
 //    operation.getCard().setBalance(newBalance);

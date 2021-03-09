@@ -10,12 +10,13 @@ import solvery.cards.model.Role;
 import solvery.cards.model.User;
 import solvery.cards.service.UserService;
 import solvery.cards.service.UserServiceInterfaceTest;
-import solvery.cards.util.ValidationUtil;
 
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Sql(value = {"/create-users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/create-users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -43,19 +44,22 @@ class UserServiceIntegrationTest extends AbstractServiceIntegrationTest implemen
     User newUser =
         new User("u1", "psw", "user0", "user0@a.ru", Collections.singleton(Role.USER));
 
-    DataIntegrityViolationException exception =
-        assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
-    assertTrue(ValidationUtil.getRootCause(exception).getMessage().contains("users_unique_username_idx"));
+    assertThatExceptionOfType(DataIntegrityViolationException.class)
+        .isThrownBy(() -> service.create(newUser))
+        .havingRootCause()
+        .withMessageContaining("users_unique_username_idx");
   }
 
   @Test
   @Override
   public void createShouldReturnDuplicateEmail() {
-    User newUser = new User("u0", "psw", "user0", "user1@a.ru", Collections.singleton(Role.USER));
+    User newUser =
+        new User("u0", "psw", "user0", "user1@a.ru", Collections.singleton(Role.USER));
 
-    DataIntegrityViolationException exception =
-        assertThrows(DataIntegrityViolationException.class, () -> service.create(newUser));
-    assertTrue(ValidationUtil.getRootCause(exception).getMessage().contains("users_unique_email_idx"));
+    assertThatExceptionOfType(DataIntegrityViolationException.class)
+        .isThrownBy(() -> service.create(newUser))
+        .havingRootCause()
+        .withMessageContaining("users_unique_email_idx");
   }
 
   @Test

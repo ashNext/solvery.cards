@@ -1,7 +1,5 @@
 package solvery.cards.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -10,7 +8,11 @@ import solvery.cards.model.Card;
 import solvery.cards.model.Role;
 import solvery.cards.model.User;
 import solvery.cards.repository.CardRepository;
-import solvery.cards.util.exception.NotFoundException;
+import solvery.cards.util.exception.NotFoundCardByIdException;
+import solvery.cards.util.exception.NotFoundCardByNumbException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -58,22 +60,22 @@ public class CardService {
 
   public Card getById(Integer id) {
     return repository.findById(id)
-        .orElseThrow(() -> new NotFoundException("card.cardByIdNotFound"));
+        .orElseThrow(NotFoundCardByIdException::new);
   }
 
   public Card getEnabledById(Integer id) {
     return repository.findByIdAndEnabledTrue(id)
-        .orElseThrow(() -> new NotFoundException("card.cardByIdNotFound"));
+        .orElseThrow(NotFoundCardByIdException::new);
   }
 
   public Card getDisabledById(Integer id) {
     return repository.findByIdAndEnabledFalse(id)
-        .orElseThrow(() -> new NotFoundException("card.cardByIdNotFound"));
+        .orElseThrow(NotFoundCardByIdException::new);
   }
 
   public Card getEnabledByCardNumb(String cardNumb) {
     return repository.findByNumbAndEnabledTrue(cardNumb)
-        .orElseThrow(() -> new NotFoundException("card.numbNotFound", cardNumb));
+        .orElseThrow(() -> new NotFoundCardByNumbException(cardNumb));
   }
 
   @Transactional
