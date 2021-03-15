@@ -1,6 +1,6 @@
 package solvery.cards.controller;
 
-import javax.validation.Valid;
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import solvery.cards.dto.CardDTO;
+import solvery.cards.dto.mapper.CardMapper;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping(value = "/card")
@@ -46,7 +49,7 @@ public class CardController {
       model.addAttribute("cards", cardService.getAllByUser(user));
       return "card";
     }
-    Card card = new Card(user, cardDTO.getNumb());
+    Card card = Mappers.getMapper(CardMapper.class).toCard(cardDTO, user);
     logger.info("create card {} for user {}", card, user.getUsername());
     cardService.create(card);
     return "redirect:/card";

@@ -1,8 +1,6 @@
 package solvery.cards.controller;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.validation.Valid;
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,11 +12,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import solvery.cards.dto.UserRegistrationDTO;
-import solvery.cards.model.Role;
+import solvery.cards.dto.mapper.UserRegistrationMapper;
 import solvery.cards.model.User;
 import solvery.cards.service.UserService;
 import solvery.cards.validator.user.UniqueUserMailValidator;
 import solvery.cards.validator.user.UniqueUserUsernameValidator;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping(value = "/registration")
@@ -33,7 +33,7 @@ public class UserController {
   private final UniqueUserUsernameValidator uniqueUserUsernameValidator;
 
   public UserController(UserService userService, UniqueUserMailValidator uniqueUserMailValidator,
-      UniqueUserUsernameValidator uniqueUserUsernameValidator) {
+                        UniqueUserUsernameValidator uniqueUserUsernameValidator) {
     this.userService = userService;
     this.uniqueUserMailValidator = uniqueUserMailValidator;
     this.uniqueUserUsernameValidator = uniqueUserUsernameValidator;
@@ -53,23 +53,12 @@ public class UserController {
 
   @PostMapping
   public String create(@Valid UserRegistrationDTO userRegistrationDTO,
-      BindingResult bindingResult) {
+                       BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       return "registration";
     }
 
-    Set<Role> roles = new HashSet<>();
-    roles.add(Role.USER);
-    if (userRegistrationDTO.isAdvanced()) {
-      roles.add(Role.USER_ADVANCED);
-    }
-
-    User user = new User(
-        userRegistrationDTO.getUsername(),
-        userRegistrationDTO.getPassword(),
-        userRegistrationDTO.getFullName(),
-        userRegistrationDTO.getEmail(),
-        roles);
+    User user = Mappers.getMapper(UserRegistrationMapper.class).toUser(userRegistrationDTO);
 
     logger.info("create user {}", user);
     userService.create(user);

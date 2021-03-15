@@ -1,8 +1,5 @@
 package solvery.cards.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,11 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import solvery.cards.dto.OperationCashDTO;
 import solvery.cards.dto.OperationTransferDTO;
+import solvery.cards.dto.mapper.OperationHistoryMapper;
 import solvery.cards.model.Card;
 import solvery.cards.model.User;
 import solvery.cards.service.CardService;
 import solvery.cards.service.OperationService;
-import solvery.cards.util.OperationUtil;
+
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/operation")
@@ -36,11 +37,15 @@ public class OperationController {
 
   private final MessageSourceAccessor messageSourceAccessor;
 
+  private final OperationHistoryMapper operationHistoryMapper;
+
   public OperationController(OperationService operationService, CardService cardService,
-      MessageSourceAccessor messageSourceAccessor) {
+                             MessageSourceAccessor messageSourceAccessor,
+                             OperationHistoryMapper operationHistoryMapper) {
     this.operationService = operationService;
     this.cardService = cardService;
     this.messageSourceAccessor = messageSourceAccessor;
+    this.operationHistoryMapper = operationHistoryMapper;
   }
 
   @GetMapping
@@ -50,7 +55,7 @@ public class OperationController {
 
   @GetMapping("/result")
   public String getResultOperation(@RequestParam @Nullable String type, @RequestParam String status,
-      Model model) {
+                                   Model model) {
     String resultStatus =
         messageSourceAccessor
             .getMessage("operation.result.status.bad", LocaleContextHolder.getLocale());
@@ -80,8 +85,7 @@ public class OperationController {
   @GetMapping("/add")
   public String getAddMoney(@AuthenticationPrincipal User user, Model model) {
     List<Card> enabledCards = cardService.getAllEnabledByUser(user);
-    logger.info("getAddMoney page with enabledCards {} for user {}", enabledCards,
-        user.getUsername());
+    logger.info("getAddMoney page with enabledCards {} for user {}", enabledCards, user.getUsername());
     model.addAttribute("operationCashDTO", new OperationCashDTO());
     model.addAttribute("cards", enabledCards);
     return "/operations/add";
@@ -106,8 +110,7 @@ public class OperationController {
   @GetMapping("/withdraw")
   public String getWithdrawMoney(@AuthenticationPrincipal User user, Model model) {
     List<Card> enabledCards = cardService.getAllEnabledByUser(user);
-    logger.info("getWithdrawMoney page with enabledCards {} for user {}", enabledCards,
-        user.getUsername());
+    logger.info("getWithdrawMoney page with enabledCards {} for user {}", enabledCards, user.getUsername());
     model.addAttribute("operationCashDTO", new OperationCashDTO());
     model.addAttribute("cards", enabledCards);
     return "/operations/withdraw";
@@ -123,9 +126,8 @@ public class OperationController {
       model.addAttribute("cards", cardService.getAllEnabledByUser(user));
       return "/operations/withdraw";
     }
-    logger
-        .info("create withdrawMoney operation on cardId {} in amount {}",
-            operationCashDTO.getCard().getId(), operationCashDTO.getSum());
+    logger.info("create withdrawMoney operation on cardId {} in amount {}",
+        operationCashDTO.getCard().getId(), operationCashDTO.getSum());
     operationService.withdrawMoney(operationCashDTO.getCard().getId(), operationCashDTO.getSum());
     return "redirect:/operation/result?type=withdraw&status=ok";
   }
@@ -133,8 +135,7 @@ public class OperationController {
   @GetMapping("/transfer")
   public String getTransfer(@AuthenticationPrincipal User user, Model model) {
     List<Card> enabledCards = cardService.getAllEnabledByUser(user);
-    logger.info("getTransfer page with enabledCards {} for user {}", enabledCards,
-        user.getUsername());
+    logger.info("getTransfer page with enabledCards {} for user {}", enabledCards, user.getUsername());
     model.addAttribute("operationTransferDTO", new OperationTransferDTO());
     model.addAttribute("cards", enabledCards);
     return "/operations/transfer";
@@ -172,8 +173,7 @@ public class OperationController {
       @RequestParam @Nullable LocalDate endDate,
       Model model) {
     List<Card> cards = cardService.getAllByUser(user);
-    logger.info("getHistory page with enabledCards {} for user {}", cards,
-        user.getUsername());
+    logger.info("getHistory page with enabledCards {} for user {}", cards, user.getUsername());
     model.addAttribute("cards", cards);
     model.addAttribute("directionSelected", directionId);
     model.addAttribute("typeSelected", typeId);
@@ -188,7 +188,7 @@ public class OperationController {
               + " typeId {}, startDate {}, endDate {}",
           cardId, recipientCardNumber, directionId, typeId, startDate, endDate);
       model.addAttribute("operations",
-          OperationUtil.getListOperationHistoryTo(
+          operationHistoryMapper.toOperationHistoryDTO(
               operationService
                   .getByFilter(cardId, recipientCardNumber, directionId, typeId, startDate,
                       endDate)));
